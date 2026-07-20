@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const { Pool } = require("pg");
 require('dotenv').config();
+const { translateProject } = require("./translate");
 const app = express();
 
 const PORT = process.env.PORT || 3001;
@@ -115,6 +116,20 @@ app.get("/project_imges", async (req, res) => {
       "SELECT * FROM projects_imges ORDER BY project_id"
     );
 
+    client.release();
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Ошибка выполнения запроса:", error);
+    res.status(500).json({ error: "Произошла ошибка" });
+  }
+});
+
+app.get("/project_translations", async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "SELECT * FROM project_translations ORDER BY project_id"
+    );
     client.release();
     res.json(result.rows);
   } catch (error) {
@@ -330,6 +345,45 @@ app.post("/create_post", authenticateToken, requireAdmin, async (req, res) => {
 
     for (const imge of imges_list) {
       await client.query(insertImgesQuery, [imge, projectId]);
+    }
+
+    const translationInput = {
+      name: project_name,
+      city: project_city,
+      country: project_country,
+      brief: project_brief,
+      end_date: project_finish_date,
+      team: project_team,
+      drawing_description: blueprint_description,
+    };
+    const translations = await translateProject(translationInput);
+
+    if (translations) {
+      const insertTranslationQuery = `
+        INSERT INTO project_translations
+          (project_id, lang, name, city, country, brief, end_date, team, drawing_description)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        ON CONFLICT (project_id, lang) DO UPDATE SET
+          name = EXCLUDED.name, city = EXCLUDED.city, country = EXCLUDED.country,
+          brief = EXCLUDED.brief, end_date = EXCLUDED.end_date, team = EXCLUDED.team,
+          drawing_description = EXCLUDED.drawing_description`;
+
+      for (const lang of ["en", "sk"]) {
+        const t = translations[lang];
+        await client.query(insertTranslationQuery, [
+          projectId,
+          lang,
+          t.name,
+          t.city,
+          t.country,
+          t.brief,
+          t.end_date,
+          t.team,
+          t.drawing_description,
+        ]);
+      }
+    } else {
+      console.error(`Translation failed for project ${projectId} — continuing without it`);
     }
 
     client.release();

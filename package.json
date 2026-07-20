@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.112.3",
     "admin": "^1.4.1",
     "all": "^0.0.0",
     "bcryptjs": "^2.4.3",
