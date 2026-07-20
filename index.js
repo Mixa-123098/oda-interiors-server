@@ -1,17 +1,24 @@
-const express = require("express"); 
+const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const { Pool } = require("pg");
-const { log } = require("console");
 require('dotenv').config();
 const app = express();
 
 const PORT = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET;
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.COOKIE_SECURE === "true",
+  sameSite: "lax",
+  maxAge: 24 * 60 * 60 * 1000,
+};
 const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -20,6 +27,26 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   ssl: process.env.DB_SSL === "true",
 });
+
+function authenticateToken(req, res, next) {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ error: "not_authenticated" });
+  }
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "invalid_token" });
+  }
+}
+
+function requireAdmin(req, res, next) {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ error: "forbidden" });
+  }
+  next();
+}
 
 
 app.get("/health", (req, res) => {
@@ -46,7 +73,7 @@ app.get("/projects", async (req, res) => {
   }
 });
 
-app.delete("/delete_project/:id", async (req, res) => {
+app.delete("/delete_project/:id", authenticateToken, requireAdmin, async (req, res) => {
   const projectId = req.params.id;
 
   try {
@@ -96,10 +123,12 @@ app.get("/project_imges", async (req, res) => {
   }
 });
 
-app.get("/users", async (req, res) => {
+app.get("/users", authenticateToken, requireAdmin, async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query("SELECT * FROM users ORDER BY id ");
+    const result = await client.query(
+      "SELECT id, username, email, role, status FROM users ORDER BY id"
+    );
     client.release();
     res.json(result.rows);
   } catch (error) {
@@ -110,15 +139,28 @@ app.get("/users", async (req, res) => {
 
 app.post("/users", async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { username, email, password } = req.body;
     const client = await pool.connect();
+
+    const existing = await client.query(
+      "SELECT username, email FROM users WHERE username = $1 OR email = $2",
+      [username, email]
+    );
+    if (existing.rows.some((row) => row.username === username)) {
+      client.release();
+      return res.status(409).json({ error: "username_taken" });
+    }
+    if (existing.rows.some((row) => row.email === email)) {
+      client.release();
+      return res.status(409).json({ error: "email_taken" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const query =
-      "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4)";
-      // "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *";
-    const values = [username, email, password, role];
-    const result = await client.query(query, values);
+      "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, 'user') RETURNING id, username, email, role";
+    const result = await client.query(query, [username, email, hashedPassword]);
     client.release();
-    res.json(result.rows[0]);
+    res.json({ success: true, user: result.rows[0] });
   } catch (error) {
     console.error("Ошибка выполнения запроса:", error);
     res.status(500).json({
@@ -128,44 +170,38 @@ app.post("/users", async (req, res) => {
   }
 });
 
-app.put("/update_user_status/:username", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
-    const { username } = req.params;
-    const { status } = req.body;
-
-    let token;
-
-    if (status == "online") {
-      const payload = {
-        username: username,
-      };
-
-      const options = {
-        expiresIn: "1h",
-      };
-
-      const secretKey = "your_secret_key";
-      token = username;
-      // token = jwt.sign(payload, secretKey, options);
-    } else {
-      token = " ";
-    }
-
+    const { username, password } = req.body;
     const client = await pool.connect();
-
-    const query =
-      "UPDATE users SET status = $1, token = $2 WHERE username = $3";
-      // "UPDATE users SET status = $1, token = $2 WHERE username = $3 RETURNING *";
-
-    const result = await client.query(query, [status, token, username]);
-
+    const result = await client.query(
+      "SELECT id, username, email, password, role FROM users WHERE username = $1",
+      [username]
+    );
     client.release();
 
-    if (result.rows.length > 0) {
-      res.json({ ...result.rows[0], token });
-    } else {
-      res.status(404).json({ error: "Пользователь не найден" });
+    const user = result.rows[0];
+    if (!user) {
+      return res.status(401).json({ error: "user_not_found" });
     }
+
+    const passwordMatches = await bcrypt.compare(password, user.password);
+    if (!passwordMatches) {
+      return res.status(401).json({ error: "invalid_password" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+    res.cookie("token", token, COOKIE_OPTIONS);
+    res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    });
   } catch (error) {
     console.error("Ошибка выполнения запроса:", error);
     res.status(500).json({
@@ -175,36 +211,65 @@ app.put("/update_user_status/:username", async (req, res) => {
   }
 });
 
-app.put("/update_user_role/:username", async (req, res) => {
+app.post("/logout", (req, res) => {
+  res.clearCookie("token", COOKIE_OPTIONS);
+  res.json({ success: true });
+});
+
+app.get("/me", authenticateToken, async (req, res) => {
   try {
-    const { username } = req.params;
-    const { role } = req.body;
-
     const client = await pool.connect();
-
-    const query = "UPDATE users SET role = $1 WHERE username = $2 ";
-    // const query = "UPDATE users SET role = $1 WHERE username = $2 RETURNING *";
-
-    const result = await client.query(query, [role, username]);
-
+    const result = await client.query(
+      "SELECT id, username, email, role FROM users WHERE id = $1",
+      [req.user.id]
+    );
     client.release();
 
-    if (result.rows.length > 0) {
-      res.json({ ...result.rows[0] });
-    } else {
-      res.status(404).json({ error: "Пользователь не найден" });
+    const user = result.rows[0];
+    if (!user) {
+      return res.status(404).json({ error: "user_not_found" });
     }
+    res.json(user);
   } catch (error) {
     console.error("Ошибка выполнения запроса:", error);
-    res.status(500).json({
-      error: "Произошла ошибка при выполнении запроса",
-      details: error.message,
-    });
+    res.status(500).json({ error: "Произошла ошибка" });
   }
 });
+
+app.put(
+  "/update_user_role/:username",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { username } = req.params;
+      const { role } = req.body;
+
+      const client = await pool.connect();
+
+      const query = "UPDATE users SET role = $1 WHERE username = $2 ";
+
+      const result = await client.query(query, [role, username]);
+
+      client.release();
+
+      if (result.rowCount > 0) {
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ error: "Пользователь не найден" });
+      }
+    } catch (error) {
+      console.error("Ошибка выполнения запроса:", error);
+      res.status(500).json({
+        error: "Произошла ошибка при выполнении запроса",
+        details: error.message,
+      });
+    }
+  }
+);
 
 let projectdir;
-app.post("/create_post", async (req, res) => {
+app.post("/create_post", authenticateToken, requireAdmin, async (req, res) => {
   try {
     const {
       project_name,
@@ -302,7 +367,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage }).single("file");
 
-app.post("/upload", (req, res) => {
+app.post("/upload", authenticateToken, requireAdmin, (req, res) => {
   upload(req, res, (err) => {
     if (err) {
       console.error(err);
@@ -317,7 +382,7 @@ app.post("/upload", (req, res) => {
     res.send("File uploaded!");
   });
 });
-app.put("/update_project/:projectId", async (req, res) => {
+app.put("/update_project/:projectId", authenticateToken, requireAdmin, async (req, res) => {
   try {
     const projectId = req.params.projectId;
 
@@ -473,32 +538,6 @@ app.put("/update_project/:projectId", async (req, res) => {
     });
   }
 });
-
-// app.post("/joinTeam", (req, res) => {
-//   const { name, email, message } = req.body;
-
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user: "mixxxxxxxxxxa13@gmail.com",
-//       pass: "Ms_123098",
-//     },
-//   });
-
-//   const mailOptions = {
-//     from: `mixxxxxxxxxxa13@gmail.com`,
-//     to: "mixxxxxxxxxxa13@gmail.com",
-//     subject: "New Join Request",
-//     text: `Name:${name}\n Email: ${email}\nMessage: ${message}`,
-//   };
-
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       return res.status(500).send(error.toString());
-//     }
-//     res.status(200).send("Email sent: " + info.response);
-//   });
-// });
 
 app.get("/get-file/:fileName", (req, res) => {
   const fileName = req.params.fileName;
