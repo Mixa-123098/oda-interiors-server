@@ -502,7 +502,7 @@ app.put("/update_project/:projectId", async (req, res) => {
 
 app.get("/get-file/:fileName", (req, res) => {
   const fileName = req.params.fileName;
-  const filePath = path.join(__dirname, process.env.UPLOAD_DIR, fileName);
+  const filePath = path.resolve(__dirname, process.env.UPLOAD_DIR, fileName);
 
   res.sendFile(filePath, (err) => {
     if (err) {
