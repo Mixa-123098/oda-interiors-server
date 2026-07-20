@@ -13,12 +13,12 @@ const app = express();
 
 const PORT = process.env.PORT || 3001;
 const pool = new Pool({
-  user: "site_portfolio_final_version_user",
-  password: "AomyENvMp6nTOtzZfdpVRKjY2uKSS8MF",
-  host: "dpg-cq2i1tbv2p9s73etb0n0-a.oregon-postgres.render.com",
-  port: 5432,
-  database: "site_portfolio_final_version",
-  ssl: true,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  ssl: process.env.DB_SSL === "true",
 });
 
 
@@ -27,7 +27,7 @@ app.get("/health", (req, res) => {
 });
 
 
-app.use(cors());
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -285,7 +285,7 @@ app.post("/create_post", async (req, res) => {
   }
 });
 
-const uploadDir = `../client/public/img/main_imges_folder`;
+const uploadDir = process.env.UPLOAD_DIR;
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -502,11 +502,7 @@ app.put("/update_project/:projectId", async (req, res) => {
 
 app.get("/get-file/:fileName", (req, res) => {
   const fileName = req.params.fileName;
-  const filePath = path.join(
-    __dirname,
-    "../client/public/img/main_imges_folder/",
-    fileName
-  );
+  const filePath = path.join(__dirname, process.env.UPLOAD_DIR, fileName);
 
   res.sendFile(filePath, (err) => {
     if (err) {

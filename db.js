@@ -1,12 +1,13 @@
+require("dotenv").config();
 const Pool = require("pg").Pool;
 
 const pool = new Pool({
-  user: "site_portfolio_final_version_user",
-  password: "AomyENvMp6nTOtzZfdpVRKjY2uKSS8MF",
-  // dlit
-  host: "dpg-cq2i1tbv2p9s73etb0n0-a.oregon-postgres.render.com",
-  port: 5432,
-  database: "site_portfolio_final_version",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  ssl: process.env.DB_SSL === "true",
 });
 
-module.exports = pool();
+module.exports = pool;
