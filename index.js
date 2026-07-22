@@ -9,7 +9,7 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const { Pool } = require("pg");
 require('dotenv').config();
-const { translateProject } = require("./translate");
+const { translateProject, translateUiContent } = require("./translate");
 const app = express();
 
 const PORT = process.env.PORT || 3001;
@@ -135,6 +135,155 @@ app.get("/project_translations", async (req, res) => {
   } catch (error) {
     console.error("Ошибка выполнения запроса:", error);
     res.status(500).json({ error: "Произошла ошибка" });
+  }
+});
+
+app.get("/languages", async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "SELECT code, name, is_builtin FROM languages ORDER BY is_builtin DESC, code"
+    );
+    client.release();
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Ошибка выполнения запроса:", error);
+    res.status(500).json({ error: "Произошла ошибка" });
+  }
+});
+
+app.get("/languages/:code/translations", async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "SELECT ui_translations FROM languages WHERE code = $1",
+      [req.params.code]
+    );
+    client.release();
+    if (result.rows.length === 0 || !result.rows[0].ui_translations) {
+      return res.status(404).json({ error: "not_found" });
+    }
+    res.json(result.rows[0].ui_translations);
+  } catch (error) {
+    console.error("Ошибка выполнения запроса:", error);
+    res.status(500).json({ error: "Произошла ошибка" });
+  }
+});
+
+app.post("/languages", authenticateToken, requireAdmin, async (req, res) => {
+  const { code, name, sourceContent } = req.body;
+
+  if (!code || !/^[a-z]{2,3}$/.test(code)) {
+    return res.status(400).json({ error: "invalid_code" });
+  }
+  if (!name || !sourceContent) {
+    return res.status(400).json({ error: "missing_fields" });
+  }
+
+  const client = await pool.connect();
+  try {
+    const existing = await client.query(
+      "SELECT code FROM languages WHERE code = $1",
+      [code]
+    );
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ error: "language_exists" });
+    }
+
+    const uiTranslations = await translateUiContent(sourceContent, name);
+    if (!uiTranslations) {
+      return res.status(500).json({ error: "translation_failed" });
+    }
+
+    await client.query(
+      "INSERT INTO languages (code, name, is_builtin, ui_translations) VALUES ($1, $2, false, $3)",
+      [code, name, uiTranslations]
+    );
+
+    // Backfill: translate all existing projects into the new language too.
+    const { rows: projects } = await client.query("SELECT * FROM projects");
+    const insertTranslationQuery = `
+      INSERT INTO project_translations
+        (project_id, lang, name, city, country, brief, end_date, team, drawing_description)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ON CONFLICT (project_id, lang) DO UPDATE SET
+        name = EXCLUDED.name, city = EXCLUDED.city, country = EXCLUDED.country,
+        brief = EXCLUDED.brief, end_date = EXCLUDED.end_date, team = EXCLUDED.team,
+        drawing_description = EXCLUDED.drawing_description`;
+
+    const BATCH_SIZE = 4;
+    for (let i = 0; i < projects.length; i += BATCH_SIZE) {
+      const batch = projects.slice(i, i + BATCH_SIZE);
+      const batchResults = await Promise.all(
+        batch.map(async (project) => {
+          const { rows: blueprintRows } = await client.query(
+            "SELECT description FROM projects_blueprints WHERE project_id = $1",
+            [project.id]
+          );
+          const translationInput = {
+            name: project.project_name,
+            city: project.project_city,
+            country: project.project_country,
+            brief: project.project_brief,
+            end_date: project.project_finish_date,
+            team: project.project_team,
+            drawing_description: blueprintRows[0]?.description || "",
+          };
+          const translated = await translateProject(translationInput, [{ code, name }]);
+          return { project, translated };
+        })
+      );
+
+      for (const { project, translated } of batchResults) {
+        if (translated && translated[code]) {
+          const t = translated[code];
+          await client.query(insertTranslationQuery, [
+            project.id,
+            code,
+            t.name,
+            t.city,
+            t.country,
+            t.brief,
+            t.end_date,
+            t.team,
+            t.drawing_description,
+          ]);
+        }
+      }
+    }
+
+    res.json({ success: true, code, name });
+  } catch (error) {
+    console.error("Ошибка добавления языка:", error);
+    res.status(500).json({ error: "Произошла ошибка" });
+  } finally {
+    client.release();
+  }
+});
+
+app.delete("/languages/:code", authenticateToken, requireAdmin, async (req, res) => {
+  const { code } = req.params;
+  const client = await pool.connect();
+  try {
+    const existing = await client.query(
+      "SELECT is_builtin FROM languages WHERE code = $1",
+      [code]
+    );
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: "not_found" });
+    }
+    if (existing.rows[0].is_builtin) {
+      return res.status(400).json({ error: "cannot_delete_builtin" });
+    }
+
+    await client.query("DELETE FROM project_translations WHERE lang = $1", [code]);
+    await client.query("DELETE FROM languages WHERE code = $1", [code]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Ошибка удаления языка:", error);
+    res.status(500).json({ error: "Произошла ошибка" });
+  } finally {
+    client.release();
   }
 });
 
@@ -356,7 +505,12 @@ app.post("/create_post", authenticateToken, requireAdmin, async (req, res) => {
       team: project_team,
       drawing_description: blueprint_description,
     };
-    const translations = await translateProject(translationInput);
+    const { rows: targetLangs } = await client.query(
+      "SELECT code, name FROM languages WHERE code != 'ua'"
+    );
+    const translations = targetLangs.length
+      ? await translateProject(translationInput, targetLangs)
+      : null;
 
     if (translations) {
       const insertTranslationQuery = `
@@ -368,7 +522,7 @@ app.post("/create_post", authenticateToken, requireAdmin, async (req, res) => {
           brief = EXCLUDED.brief, end_date = EXCLUDED.end_date, team = EXCLUDED.team,
           drawing_description = EXCLUDED.drawing_description`;
 
-      for (const lang of ["en", "sk"]) {
+      for (const { code: lang } of targetLangs) {
         const t = translations[lang];
         await client.query(insertTranslationQuery, [
           projectId,
