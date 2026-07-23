@@ -387,7 +387,7 @@ app.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT id, username, email, password, role FROM users WHERE username = $1",
+      "SELECT id, username, email, password, role, must_change_password FROM users WHERE username = $1",
       [username]
     );
     client.release();
@@ -413,6 +413,7 @@ app.post("/login", async (req, res) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      must_change_password: !!user.must_change_password,
     });
   } catch (error) {
     console.error("Error executing query:", error);
@@ -432,7 +433,7 @@ app.get("/me", authenticateToken, async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT id, username, email, role FROM users WHERE id = $1",
+      "SELECT id, username, email, role, must_change_password FROM users WHERE id = $1",
       [req.user.id]
     );
     client.release();
@@ -441,7 +442,7 @@ app.get("/me", authenticateToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "user_not_found" });
     }
-    res.json(user);
+    res.json({ ...user, must_change_password: !!user.must_change_password });
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).json({ error: "internal_error" });
@@ -499,7 +500,7 @@ app.put(
 
       const client = await pool.connect();
       const result = await client.query(
-        "UPDATE users SET password = $1 WHERE username = $2",
+        "UPDATE users SET password = $1, must_change_password = true WHERE username = $2",
         [hashedPassword, username]
       );
       client.release();
@@ -514,6 +515,51 @@ app.put(
     }
   }
 );
+
+// Lets any logged-in user (any role) change their own password — the
+// counterpart to admin_reset_password above. Requires the current password
+// so a hijacked/shared session can't silently take over the account; the
+// forced-change screen after an admin reset satisfies this with the temp
+// password the admin gave the user.
+app.put("/me/password", authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: "missing_fields" });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: "password_too_short" });
+    }
+
+    const client = await pool.connect();
+    try {
+      const { rows } = await client.query(
+        "SELECT password FROM users WHERE id = $1",
+        [req.user.id]
+      );
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "user_not_found" });
+      }
+
+      const matches = await bcrypt.compare(currentPassword, rows[0].password);
+      if (!matches) {
+        return res.status(401).json({ error: "invalid_current_password" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await client.query(
+        "UPDATE users SET password = $1, must_change_password = false WHERE id = $2",
+        [hashedPassword, req.user.id]
+      );
+      res.json({ success: true });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
 
 let projectdir;
 app.post("/create_post", authenticateToken, requireAdmin, async (req, res) => {
@@ -879,6 +925,9 @@ async function ensureSchema() {
     );
     await client.query(
       "UPDATE projects SET display_order = id WHERE display_order IS NULL"
+    );
+    await client.query(
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT false"
     );
   } finally {
     client.release();
