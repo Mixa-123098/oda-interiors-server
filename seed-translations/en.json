@@ -324,7 +324,9 @@
       "croppedImage": "Cropped photo",
       "noCroppedImage": "You have not cropped the photo yet",
       "save": "Save changes",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "saveSuccess": "Photo saved! The updated version is already shown above.",
+      "saveError": "Failed to save the cropped photo"
     },
     "languages": {
       "title": "Site Languages"

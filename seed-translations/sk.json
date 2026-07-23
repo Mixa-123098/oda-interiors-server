@@ -323,7 +323,9 @@
       "croppedImage": "Orezaná fotografia",
       "noCroppedImage": "Ešte ste neorezali fotografiu",
       "save": "Uložiť zmeny",
-      "loading": "Načítava sa..."
+      "loading": "Načítava sa...",
+      "saveSuccess": "Fotka uložená! Aktualizovaná verzia je už zobrazená vyššie.",
+      "saveError": "Nepodarilo sa uložiť orezanú fotku"
     },
     "languages": {
       "title": "Jazyky stránky"
