@@ -275,6 +275,8 @@
       "delete": "Delete",
       "retranslate": "Retranslate",
       "retranslateConfirm": "Retranslate (overwrites current translations) — project",
+      "retranslateChooseLangs": "Choose which languages to translate:",
+      "retranslateSubmit": "Retranslate selected",
       "hide": "Hide",
       "show": "Show",
       "hidden": "Hidden",

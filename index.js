@@ -276,7 +276,7 @@ app.get("/languages", async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT code, name, is_builtin FROM languages ORDER BY is_builtin DESC, code"
+      "SELECT code, name FROM languages ORDER BY code"
     );
     client.release();
     res.json(result.rows);
@@ -418,19 +418,27 @@ app.post("/languages", authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+// All languages are equal now — no built-in/added distinction, any language
+// (including ua/en/sk) can be deleted. The one guard that remains: never let
+// the last language go, or the site is left with no UI text at all — same
+// idea as the last-admin protection on user deletion.
 app.delete("/languages/:code", authenticateToken, requireAdmin, async (req, res) => {
   const { code } = req.params;
   const client = await pool.connect();
   try {
     const existing = await client.query(
-      "SELECT is_builtin FROM languages WHERE code = $1",
+      "SELECT code FROM languages WHERE code = $1",
       [code]
     );
     if (existing.rows.length === 0) {
       return res.status(404).json({ error: "not_found" });
     }
-    if (existing.rows[0].is_builtin) {
-      return res.status(400).json({ error: "cannot_delete_builtin" });
+
+    const { rows: countRows } = await client.query(
+      "SELECT COUNT(*) FROM languages"
+    );
+    if (Number(countRows[0].count) <= 1) {
+      return res.status(400).json({ error: "cannot_delete_last_language" });
     }
 
     await client.query("DELETE FROM project_translations WHERE lang = $1", [code]);
@@ -833,17 +841,23 @@ app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
   }
 });
 
-// Retry translation for one project into every language other than its own
-// source language — recovery path for when create_post's translation call
-// failed (network hiccup, API error) and left the project saved but
-// untranslated, without requiring the admin to delete/re-add a whole
-// language to fix one project.
+// Retry translation for one project into a chosen set of languages —
+// recovery path for when create_post's translation call failed (network
+// hiccup, API error) and left the project saved but untranslated, without
+// requiring the admin to delete/re-add a whole language to fix one project.
+// Body: { langs: ["en","sk"] } — required and must be non-empty, so a
+// misclick can't silently overwrite every language's translation, including
+// ones an admin hand-edited via the Translations panel.
 app.post(
   "/projects/:id/retranslate",
   authenticateToken,
   requireStaff,
   async (req, res) => {
     const projectId = req.params.id;
+    const { langs } = req.body || {};
+    if (!Array.isArray(langs) || langs.length === 0) {
+      return res.status(400).json({ error: "langs_required" });
+    }
     const client = await pool.connect();
     try {
       const { rows: projectRows } = await client.query(
@@ -860,8 +874,8 @@ app.post(
         [projectId]
       );
       const { rows: targetLangs } = await client.query(
-        "SELECT code, name FROM languages WHERE code != $1",
-        [project.source_lang]
+        "SELECT code, name FROM languages WHERE code = ANY($1) AND code != $2",
+        [langs, project.source_lang]
       );
 
       if (!targetLangs.length) {
@@ -933,7 +947,7 @@ app.get(
         [projectId]
       );
       const { rows: allLangs } = await client.query(
-        "SELECT code FROM languages ORDER BY is_builtin DESC, code"
+        "SELECT code FROM languages ORDER BY code"
       );
       const { rows: translationRows } = await client.query(
         "SELECT * FROM project_translations WHERE project_id = $1",

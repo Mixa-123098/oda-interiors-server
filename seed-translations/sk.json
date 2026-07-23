@@ -274,6 +274,8 @@
       "delete": "Vymazať",
       "retranslate": "Preložiť znova",
       "retranslateConfirm": "Preložiť znova (prepíše aktuálne preklady) — projekt",
+      "retranslateChooseLangs": "Vyberte jazyky na preklad:",
+      "retranslateSubmit": "Preložiť vybrané",
       "hide": "Skryť",
       "show": "Zobraziť",
       "hidden": "Skryté",

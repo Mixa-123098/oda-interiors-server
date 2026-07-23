@@ -272,6 +272,8 @@
       "delete": "Видалити",
       "retranslate": "Перекласти",
       "retranslateConfirm": "Перекласти заново (перезапише поточні переклади) — проєкт",
+      "retranslateChooseLangs": "Оберіть мови для перекладу:",
+      "retranslateSubmit": "Перекласти обрані",
       "hide": "Приховати",
       "show": "Показати",
       "hidden": "Приховано",
