@@ -168,7 +168,9 @@
       "success": "Project created successfully!",
       "error": "Failed to create the project. Please try again.",
       "translationFailed": "Project created, but translation failed for:",
-      "translationFailedHint": "The project is only visible in Ukrainian. Try the \"Retranslate\" button on the Edit Project tab.",
+      "translationFailedHint": "The project is only visible in its source language. Try the \"Retranslate\" button on the Edit Project tab.",
+      "language": "Project language",
+      "chooseLanguage": "Choose language",
       "title": "Create a new project",
       "name": "Name",
       "city": "City",
@@ -204,6 +206,7 @@
           "false": "Country name is required"
         },
         "chooseSpecialization": "Choose specialization",
+        "chooseLanguage": "Choose the project's language",
         "projectDescription": {
           "true": "Project description is suitable",
           "false": "Project description is required"
@@ -269,6 +272,8 @@
       "retranslate": "Retranslate",
       "retranslateSuccess": "Translation updated",
       "retranslateError": "Failed to translate",
+      "editTranslations": "Translations",
+      "closeTranslations": "Close translations",
       "reorderHint": "Drag rows to change the project order on the site, then click \"Save Order\".",
       "saveOrder": "Save Order",
       "saveOrderSuccess": "Project order saved",

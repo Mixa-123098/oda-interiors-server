@@ -168,7 +168,9 @@
       "success": "Projekt bol úspešne vytvorený!",
       "error": "Nepodarilo sa vytvoriť projekt. Skúste to znova.",
       "translationFailed": "Projekt bol vytvorený, ale preklad zlyhal pre:",
-      "translationFailedHint": "Projekt je viditeľný iba v ukrajinčine. Skúste tlačidlo \"Preložiť znova\" na karte úpravy projektu.",
+      "translationFailedHint": "Projekt je viditeľný iba v jazyku, v ktorom bol vytvorený. Skúste tlačidlo \"Preložiť znova\" na karte úpravy projektu.",
+      "language": "Jazyk projektu",
+      "chooseLanguage": "Vyberte jazyk",
       "title": "Vytvoriť nový projekt",
       "name": "Názov",
       "city": "Mesto",
@@ -203,6 +205,7 @@
           "false": "Názov krajiny je povinný"
         },
         "chooseSpecialization": "Vyberte špecializáciu",
+        "chooseLanguage": "Vyberte jazyk projektu",
         "projectDescription": {
           "true": "Popis projektu je vhodný",
           "false": "Popis projektu je povinný"
@@ -268,6 +271,8 @@
       "retranslate": "Preložiť znova",
       "retranslateSuccess": "Preklad aktualizovaný",
       "retranslateError": "Nepodarilo sa preložiť",
+      "editTranslations": "Preklady",
+      "closeTranslations": "Zavrieť preklady",
       "reorderHint": "Presunutím riadkov zmeníte poradie projektov na webe, potom kliknite na \"Uložiť poradie\".",
       "saveOrder": "Uložiť poradie",
       "saveOrderSuccess": "Poradie projektov uložené",

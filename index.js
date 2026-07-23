@@ -618,15 +618,19 @@ app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
       blueprint_img,
       blueprint_description,
       imges_list,
+      source_lang,
     } = req.body;
+    if (!source_lang) {
+      return res.status(400).json({ error: "source_lang_required" });
+    }
     projectdir = project_name;
     const client = await pool.connect();
 
     const insertProjectQuery = `
-      INSERT INTO projects (project_name, project_city, project_country, 
+      INSERT INTO projects (project_name, project_city, project_country,
         project_specialization, project_img_src, project_header_img, project_brief,
-         project_finish_date, project_square, project_team)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`;
+         project_finish_date, project_square, project_team, source_lang)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`;
 
     const insertBlueprintQuery = `
       INSERT INTO projects_blueprints (img, description, project_id)
@@ -651,7 +655,10 @@ app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
       blueprint_description,
     ];
 
-    const result = await client.query(insertProjectQuery, values.slice(0, 10));
+    const result = await client.query(insertProjectQuery, [
+      ...values.slice(0, 10),
+      source_lang,
+    ]);
     const projectId = result.rows[0].id;
     req.body.projectId = projectId;
 
@@ -675,7 +682,8 @@ app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
       drawing_description: blueprint_description,
     };
     const { rows: targetLangs } = await client.query(
-      "SELECT code, name FROM languages WHERE code != 'ua'"
+      "SELECT code, name FROM languages WHERE code != $1",
+      [source_lang]
     );
     const translations = targetLangs.length
       ? await translateProject(translationInput, targetLangs)
@@ -712,10 +720,11 @@ app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
   }
 });
 
-// Retry translation for one project into every non-Ukrainian language —
-// recovery path for when create_post's translation call failed (network
-// hiccup, API error) and left the project saved but untranslated, without
-// requiring the admin to delete/re-add a whole language to fix one project.
+// Retry translation for one project into every language other than its own
+// source language — recovery path for when create_post's translation call
+// failed (network hiccup, API error) and left the project saved but
+// untranslated, without requiring the admin to delete/re-add a whole
+// language to fix one project.
 app.post(
   "/projects/:id/retranslate",
   authenticateToken,
@@ -738,7 +747,8 @@ app.post(
         [projectId]
       );
       const { rows: targetLangs } = await client.query(
-        "SELECT code, name FROM languages WHERE code != 'ua'"
+        "SELECT code, name FROM languages WHERE code != $1",
+        [project.source_lang]
       );
 
       if (!targetLangs.length) {
@@ -767,6 +777,145 @@ app.post(
       res.json({ success: true, failed_translations: [] });
     } catch (error) {
       console.error("Error retranslating project:", error);
+      res.status(500).json({ error: "internal_error" });
+    } finally {
+      client.release();
+    }
+  }
+);
+
+const PROJECT_TRANSLATION_FIELDS = [
+  "name",
+  "city",
+  "country",
+  "brief",
+  "end_date",
+  "team",
+  "drawing_description",
+];
+
+// A project's own language (source_lang) lives directly on projects/
+// projects_blueprints; every other language lives in project_translations.
+// This lets the editor show/edit any language for a project through one
+// consistent shape without the admin needing to know which is which.
+app.get(
+  "/projects/:id/translations",
+  authenticateToken,
+  requireStaff,
+  async (req, res) => {
+    const projectId = req.params.id;
+    const client = await pool.connect();
+    try {
+      const { rows: projectRows } = await client.query(
+        "SELECT * FROM projects WHERE id = $1",
+        [projectId]
+      );
+      if (projectRows.length === 0) {
+        return res.status(404).json({ error: "project_not_found" });
+      }
+      const project = projectRows[0];
+
+      const { rows: blueprintRows } = await client.query(
+        "SELECT description FROM projects_blueprints WHERE project_id = $1",
+        [projectId]
+      );
+      const { rows: allLangs } = await client.query(
+        "SELECT code FROM languages ORDER BY is_builtin DESC, code"
+      );
+      const { rows: translationRows } = await client.query(
+        "SELECT * FROM project_translations WHERE project_id = $1",
+        [projectId]
+      );
+
+      const translations = {};
+      for (const { code } of allLangs) {
+        if (code === project.source_lang) {
+          translations[code] = {
+            name: project.project_name,
+            city: project.project_city,
+            country: project.project_country,
+            brief: project.project_brief,
+            end_date: project.project_finish_date,
+            team: project.project_team,
+            drawing_description: blueprintRows[0]?.description || "",
+          };
+        } else {
+          const row = translationRows.find((r) => r.lang === code);
+          translations[code] = row
+            ? {
+                name: row.name,
+                city: row.city,
+                country: row.country,
+                brief: row.brief,
+                end_date: row.end_date,
+                team: row.team,
+                drawing_description: row.drawing_description,
+              }
+            : null;
+        }
+      }
+
+      res.json({ source_lang: project.source_lang, translations });
+    } catch (error) {
+      console.error("Error loading project translations:", error);
+      res.status(500).json({ error: "internal_error" });
+    } finally {
+      client.release();
+    }
+  }
+);
+
+app.put(
+  "/projects/:id/translations/:lang",
+  authenticateToken,
+  requireStaff,
+  async (req, res) => {
+    const projectId = req.params.id;
+    const lang = req.params.lang;
+    const fields = {};
+    for (const key of PROJECT_TRANSLATION_FIELDS) {
+      fields[key] = req.body[key] ?? "";
+    }
+
+    const client = await pool.connect();
+    try {
+      const { rows: projectRows } = await client.query(
+        "SELECT source_lang FROM projects WHERE id = $1",
+        [projectId]
+      );
+      if (projectRows.length === 0) {
+        return res.status(404).json({ error: "project_not_found" });
+      }
+
+      if (lang === projectRows[0].source_lang) {
+        await client.query(
+          `UPDATE projects SET
+            project_name = $1, project_city = $2, project_country = $3,
+            project_brief = $4, project_finish_date = $5, project_team = $6
+          WHERE id = $7`,
+          [
+            fields.name,
+            fields.city,
+            fields.country,
+            fields.brief,
+            fields.end_date,
+            fields.team,
+            projectId,
+          ]
+        );
+        await client.query(
+          `UPDATE projects_blueprints SET description = $1 WHERE project_id = $2`,
+          [fields.drawing_description, projectId]
+        );
+      } else {
+        await saveProjectTranslations(client, projectId, [{ code: lang }], {
+          [lang]: fields,
+        });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error saving project translation:", error);
       res.status(500).json({ error: "internal_error" });
     } finally {
       client.release();
@@ -976,6 +1125,27 @@ app.get("/get-file/:fileName", (req, res) => {
 // Postgres volume, so an already-deployed database needs this to pick up new
 // columns. Safe to re-run on every boot — IF NOT EXISTS / WHERE ... IS NULL
 // guards make it a no-op once applied.
+// Recursively copies keys present in `source` but missing from `target`,
+// without ever touching a key `target` already has — used to add new UI
+// strings to the DB on deploy without clobbering admin edits.
+function mergeMissingKeys(target, source) {
+  const result = { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    if (!(key in result)) {
+      result[key] = value;
+    } else if (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      result[key] &&
+      typeof result[key] === "object"
+    ) {
+      result[key] = mergeMissingKeys(result[key], value);
+    }
+  }
+  return result;
+}
+
 async function ensureSchema() {
   const client = await pool.connect();
   try {
@@ -988,19 +1158,30 @@ async function ensureSchema() {
     await client.query(
       "ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT false"
     );
+    await client.query(
+      "ALTER TABLE projects ADD COLUMN IF NOT EXISTS source_lang TEXT NOT NULL DEFAULT 'ua'"
+    );
 
     // Built-in UI copy (ua/en/sk) used to ship only as static JSON files in
     // the client image, so it could never be edited from the admin panel.
-    // Seed it into languages.ui_translations once (only where still NULL —
-    // never overwrites an admin's edits on a later boot) so every language,
-    // built-in or added, is edited the same way from here on.
+    // It now lives in languages.ui_translations instead, seeded from these
+    // files. Every boot MERGES IN any key present in the seed file but
+    // missing from the DB (so new keys added by a future code change reach
+    // production on the next deploy) without ever overwriting a value that's
+    // already there — that's what protects an admin's in-panel edits.
     for (const lang of ["ua", "en", "sk"]) {
       const seedPath = path.join(__dirname, "seed-translations", `${lang}.json`);
       if (!fs.existsSync(seedPath)) continue;
       const seedContent = JSON.parse(fs.readFileSync(seedPath, "utf8"));
+      const { rows } = await client.query(
+        "SELECT ui_translations FROM languages WHERE code = $1",
+        [lang]
+      );
+      if (rows.length === 0) continue;
+      const merged = mergeMissingKeys(rows[0].ui_translations || {}, seedContent);
       await client.query(
-        "UPDATE languages SET ui_translations = $1 WHERE code = $2 AND ui_translations IS NULL",
-        [seedContent, lang]
+        "UPDATE languages SET ui_translations = $1 WHERE code = $2",
+        [merged, lang]
       );
     }
   } finally {
