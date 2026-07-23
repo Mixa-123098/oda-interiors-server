@@ -232,6 +232,35 @@ app.get("/languages/:code/translations", async (req, res) => {
   }
 });
 
+// Lets an admin fix a UI string (typo, awkward AI phrasing, etc.) for any
+// language — built-in or added — without touching code or a full re-translate.
+app.put(
+  "/languages/:code/translations",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
+    const { translations } = req.body;
+    if (!translations || typeof translations !== "object") {
+      return res.status(400).json({ error: "invalid_body" });
+    }
+    try {
+      const client = await pool.connect();
+      const result = await client.query(
+        "UPDATE languages SET ui_translations = $1 WHERE code = $2",
+        [translations, req.params.code]
+      );
+      client.release();
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: "not_found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error saving translations:", error);
+      res.status(500).json({ error: "internal_error" });
+    }
+  }
+);
+
 app.post("/languages", authenticateToken, requireAdmin, async (req, res) => {
   const { code, name, sourceContent } = req.body;
 
@@ -959,6 +988,21 @@ async function ensureSchema() {
     await client.query(
       "ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT false"
     );
+
+    // Built-in UI copy (ua/en/sk) used to ship only as static JSON files in
+    // the client image, so it could never be edited from the admin panel.
+    // Seed it into languages.ui_translations once (only where still NULL —
+    // never overwrites an admin's edits on a later boot) so every language,
+    // built-in or added, is edited the same way from here on.
+    for (const lang of ["ua", "en", "sk"]) {
+      const seedPath = path.join(__dirname, "seed-translations", `${lang}.json`);
+      if (!fs.existsSync(seedPath)) continue;
+      const seedContent = JSON.parse(fs.readFileSync(seedPath, "utf8"));
+      await client.query(
+        "UPDATE languages SET ui_translations = $1 WHERE code = $2 AND ui_translations IS NULL",
+        [seedContent, lang]
+      );
+    }
   } finally {
     client.release();
   }

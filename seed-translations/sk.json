@@ -1,0 +1,486 @@
+{
+  "navbar": {
+    "mainPage": "Domov",
+    "projectsPage": "Projekty",
+    "aboutPage": "O nás",
+    "contactsPage": "Kontaktujte nás",
+    "pricesPage": "Ceny",
+    "editPage": "Upraviť",
+    "logoutButton": "Odhlásiť sa"
+  },
+  "mainPage": {
+    "goToTheProject": "Na projekt",
+    "projects": {
+      "loft": "Byt v komplexe «Loft»",
+      "chehova": "Dom na svahoch Dniepra",
+      "karaoke": "Karaoke bar v štýle steampunk"
+    },
+    "block1": {
+      "titlePartOne": "Každý projekt, ktorý vyvíjame",
+      "titlePartTwo": "ako najdôležitejší",
+      "mainTextPartOne": "Každý projekt, ktorý vyvíjame, je pre nás najdôležitejšou úlohou. Ku každej práci pristupujeme s veľkým nadšením a zodpovednosťou, bez ohľadu na jej rozsah alebo zložitosť. Náš prístup je založený na presvedčení, že každý projekt má potenciál zmeniť životy našich klientov a prispieť k ich úspechu.",
+      "mainTextPartTwo": "Náš cieľ nie je len splniť očakávania klientov, ale aj ich prekonať vytváraním riešení, ktoré im pomôžu dosiahnuť nové výšky v ich činnostiach. Veríme, že len takýto prístup dokáže vytvoriť skutočne zmysluplné a trvalé výsledky v oblasti vývoja projektov.",
+      "button": "Zistiť viac"
+    },
+    "block2": {
+      "categories": {
+        "publicInteriors": {
+          "title": "Verejné interiéry",
+          "subtitle": "Reštaurácie, kancelárie a komerčné priestory"
+        },
+        "residentialInteriorsOne": {
+          "title": "Rezidenčné interiéry",
+          "subtitle": "Byty"
+        },
+        "residentialInteriorsTwo": {
+          "title": "Rezidenčné interiéry",
+          "subtitle": "Súkromné domy"
+        }
+      }
+    },
+    "block3": {
+      "title": "Náš tím - Váš úspech",
+      "mainTextPartOne": "Sme tím odborníkov, ktorí rozumejú, že každý projekt je významným podnikom. Náš prístup je považovať každý projekt za najdôležitejšiu úlohu, bez ohľadu na jeho rozsah alebo zložitosť. Do našej práce vkladáme vášeň a zodpovednosť, pretože veríme, že každý projekt má potenciál zmeniť životy našich klientov a prispieť k ich úspechu.",
+      "mainTextPartTwo": "Náš cieľ nie je len splniť očakávania klientov, ale ich prekročiť. Vytvárame riešenia, ktoré pomáhajú klientom dosiahnuť nové výšky v ich činnostiach. Veríme, že len takýto prístup dokáže priniesť skutočne zmysluplné a trvalé výsledky v oblasti vývoja projektov.",
+      "button": "Zistiť viac o nás"
+    },
+    "block4": {
+      "title": "Pridajte sa k nášmu tímu",
+      "mainTextPartOne": "Vitajte v našom tíme! Hľadáme talentovaných a energických jednotlivcov, ktorí sú pripravení významne prispieť k našim projektom. Ponúkame rôznorodé úlohy a príležitosti na rast.",
+      "mainTextPartTwo": "Ak zdieľate naše poslanie a ste pripravení pracovať v priateľskom prostredí, neváhajte sa k nám pridať!",
+      "button": "Kontaktujte nás"
+    },
+    "block5": {
+      "title": "Zistite cenu našich služieb",
+      "mainTextPartOne": "Sme pripravení poskytnúť vám informácie o cene našich služieb. Každý projekt je pre nás dôležitý a tešíme sa na zohľadnenie vašich potrieb a otázok.",
+      "mainTextPartTwo": "Kontaktujte nás pre personalizovanú konzultáciu a cenovú ponuku. Usilujeme sa poskytnúť vám najlepšie riešenia na dosiahnutie vašich cieľov.",
+      "button": "Získať cenovú ponuku"
+    }
+  },
+  "projectsPage": {
+    "ourProjects": "Naše projekty",
+    "categories": {
+      "all": "Všetky",
+      "publicInteriors": "Verejné interiéry",
+      "apartments": "Byty",
+      "privateHouses": "Súkromné domy"
+    }
+  },
+  "aboutPage": {
+    "aboutUs": "O nás",
+    "block1": {
+      "title": "Naša história",
+      "mainTextPartOne": "Viac ako 20 rokov náš profesionálny tím pracuje v oblasti interiérového dizajnu, priťahujúc klientov prostredníctvom recenzií a odporúčaní. Je čas držať krok s vedeckým a technickým pokrokom a vytvoriť vlastný informačný zdroj.",
+      "mainTextPartTwo": "Pracujúc samostatne a občasne realizujúc úspešné spoločné projekty, sa náš tím dizajnérov a architektov rozhodol spojiť a vytvoriť komunitu. V moderných podmienkach je jednoducho potrebná platforma na uchovávanie a prezeranie dizajnových projektov."
+    },
+    "block2": {
+      "Marina": {
+        "name": "Marina Prokhorova",
+        "jobTitle": "Interiérová dizajnérka, architektka"
+      },
+      "Olha": {
+        "name": "Olha Taran",
+        "jobTitle": "Interiérová dizajnérka"
+      },
+      "Kateryna": {
+        "name": "Kateryna Sytnyk",
+        "jobTitle": "Architektka"
+      },
+      "Leonid": {
+        "name": "Leonid Startsev",
+        "jobTitle": "Interiérový dizajnér, vizualizátor"
+      }
+    },
+    "block3": {
+      "title": "Ideológia tímu",
+      "mainTextPartOne": "Poskytujeme podrobné informácie o cene našich služieb, zohľadňujúc individuálne potreby každého klienta. Každý projekt je pre nás dôležitý a starostlivo analyzujeme vaše požiadavky a otázky, aby sme ponúkli najlepšie riešenia, ktoré spĺňajú vaše ciele.",
+      "mainTextPartTwo": "Kontaktujte nás pre personalizovanú konzultáciu a presnú cenovú ponuku pre váš projekt. Usilujeme sa poskytnúť vysokokvalitné riešenia, ktoré vám pomôžu dosiahnuť úspech a efektívne a včas implementovať vaše nápady."
+    },
+    "block4": {
+      "ourValues": "Naše hodnoty",
+      "valuesList": [
+        {
+          "title": "PROFESIONALIZMUS",
+          "content": "Sme odborníci vo svojom odbore; Budujeme systematickú prácu; Budujeme efektívnu komunikáciu; Používame individuálny prístup ku každému klientovi; Neustále sa profesionálne rozvíjame a učíme."
+        },
+        {
+          "title": "INOVÁCIE",
+          "content": "Sme otvorení novým myšlienkam a technológiám; Sme proaktívni; Vytvárame atmosféru, ktorá stimuluje kreatívne hľadanie, vznik kreatívnych nápadov; Snažíme sa ponúknuť to, čo iní nemôžu."
+        },
+        {
+          "title": "REPUTÁCIA",
+          "content": "Transparentnosť, čestnosť a spoľahlivosť; Jasné plnenie zmluvných povinností; Pozitívna spätná väzba od klientov; Dodržiavanie legislatívy."
+        },
+        {
+          "title": "TÍM",
+          "content": "Sme zjednotení jediným cieľom; Sme zameraní na spoločný konečný výsledok; Sme súdržní a podporujeme sa navzájom pri dosahovaní stanovených úloh."
+        },
+        {
+          "title": "BEZPEČNOSŤ",
+          "content": "Záruka prevencie hrozieb a rizík pre zamestnancov, partnerov a životné prostredie; Komplexný prístup k bezpečnostným otázkam; Stopercentná záloha pre všetky kritické systémy; Vysokotechnologické inžinierstvo skladového komplexu."
+        },
+        {
+          "title": "KVALITA",
+          "content": "Vykonávame prácu podľa existujúceho systému kvality; Kontrolujeme každú fázu procesu a jej súlad s existujúcimi kvalitatívnymi normami; Všetky procesy sú v súlade s medzinárodnými normami a sú regulované písomnými inštrukciami; Je implementovaný systém analýzy rizík."
+        }
+      ]
+    }
+  },
+  "contactsPage": {
+    "contacts": "Kontakty",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "viber": "Viber",
+    "email": "Email",
+    "telephone": "Telefón"
+  },
+  "pricesPage": {
+    "ourPrices": "Naše ceny",
+    "tariff1": {
+      "size": "Priestory do 40m²",
+      "price": "Cena: 30$/m²"
+    },
+    "tariff2": {
+      "size": "Priestory 40-100m²",
+      "price": "Cena: 25$/m²"
+    },
+    "tariff3": {
+      "size": "Priestory od 100m²*",
+      "price": "Cena: 20$/m²"
+    },
+    "tariff4": {
+      "size": "Autorská podpora",
+      "price": "Cena: 250$/mesiac"
+    },
+    "button": "Kontaktujte nás",
+    "additionalInfo": "*Cena za projekty s veľkými plochami je dohodnutá individuálne"
+  },
+  "editPage": {
+    "adminPanel": "Administrátorský panel",
+    "createNewProject": {
+      "open": "Otvoriť",
+      "close": "Zavrieť",
+      "open_close": "vytváranie projektu",
+      "create": "Vytvoriť projekt",
+      "optional": "(nepovinné)",
+      "requiredHint": "Označené polia sú povinné, zvyšok môžete vyplniť neskôr",
+      "submitting": "Vytváranie projektu a preklad…",
+      "success": "Projekt bol úspešne vytvorený!",
+      "error": "Nepodarilo sa vytvoriť projekt. Skúste to znova.",
+      "translationFailed": "Projekt bol vytvorený, ale preklad zlyhal pre:",
+      "translationFailedHint": "Projekt je viditeľný iba v ukrajinčine. Skúste tlačidlo \"Preložiť znova\" na karte úpravy projektu.",
+      "title": "Vytvoriť nový projekt",
+      "name": "Názov",
+      "city": "Mesto",
+      "country": "Krajina",
+      "specialization": {
+        "title": "Špecializácia",
+        "choose": "Vyberte špecializáciu",
+        "publicInteriors": "Verejné interiéry",
+        "apartments": "Byty",
+        "privateHouses": "Súkromné domy"
+      },
+      "previewImage": "Obrázok (náhľad)",
+      "topProjectImage": "Obrázok (Horná časť stránky projektu)",
+      "projectDescription": "Popis projektu",
+      "endDate": "Dátum ukončenia",
+      "square": "Plocha (v štvorcových metroch)",
+      "team": "Tím",
+      "blueprintImage": "Plán (obrázok)",
+      "blueprintDescription": "Popis plánu",
+      "imagesInsideTheProject": "Obrázky (v projekte)",
+      "feedbacks": {
+        "name": {
+          "true": "Názov projektu je vhodný",
+          "false": "Názov projektu je povinný"
+        },
+        "city": {
+          "true": "Názov mesta je vhodný",
+          "false": "Názov mesta je povinný"
+        },
+        "country": {
+          "true": "Názov krajiny je vhodný",
+          "false": "Názov krajiny je povinný"
+        },
+        "chooseSpecialization": "Vyberte špecializáciu",
+        "projectDescription": {
+          "true": "Popis projektu je vhodný",
+          "false": "Popis projektu je povinný"
+        },
+        "endDate": {
+          "true": "Dátum ukončenia je vhodný",
+          "false": "Dátum ukončenia je povinný"
+        },
+        "square": {
+          "true": "Plocha je vhodná",
+          "false": "Plocha je povinná"
+        },
+        "team": {
+          "true": "Tím je vhodný",
+          "false": "Tím je povinný"
+        },
+        "blueprintDescriprion": {
+          "true": "Popis plánu je vhodný",
+          "false": "Popis plánu je povinný"
+        }
+      }
+    },
+    "usersList": {
+      "open_close": "zoznam používateľov",
+      "users": "Zoznam používateľov",
+      "username": "Používateľské meno",
+      "role": "Rola",
+      "actions": "Akcie",
+      "confirm": "Potvrdiť zmeny",
+      "makeAdministrator": "Urobiť administrátorom",
+      "makeModerator": "Urobiť moderátorom",
+      "makeUser": "Urobiť bežným používateľom",
+      "itsYou": "to ste vy",
+      "noChanges": "Neurobili ste žiadne zmeny",
+      "roleUpdateError": "Nepodarilo sa zmeniť rolu",
+      "searchPlaceholder": "Hľadať podľa mena...",
+      "filterAllRoles": "Všetky roly",
+      "roleAdmin": "Administrátor",
+      "roleModerator": "Moderátor",
+      "roleUser": "Používateľ",
+      "noResults": "Nenašli sa žiadne výsledky",
+      "resetPassword": "Resetovať heslo",
+      "resetPasswordConfirm": "Resetovať heslo pre",
+      "resetPasswordSuccess": "Heslo bolo resetované. Nové dočasné heslo pre",
+      "resetPasswordNote": "Odovzdajte toto heslo používateľovi — zobrazí sa iba raz a nikde sa neukladá.",
+      "resetPasswordError": "Nepodarilo sa resetovať heslo",
+      "ok": "OK",
+      "createUser": "Pridať používateľa",
+      "createUserSubmit": "Vytvoriť",
+      "createUserError": "Nepodarilo sa vytvoriť používateľa"
+    },
+    "editProject": {
+      "open_close": "upravenie projektu",
+      "editProject": "Upraviť projekty",
+      "save": "Uložiť",
+      "cancel": "Zrušiť",
+      "projectName": "Názov projektu",
+      "city": "Mesto",
+      "country": "Krajina",
+      "actions": "Akcie",
+      "edit": "Upraviť",
+      "delete": "Vymazať",
+      "retranslate": "Preložiť znova",
+      "retranslateSuccess": "Preklad aktualizovaný",
+      "retranslateError": "Nepodarilo sa preložiť",
+      "reorderHint": "Presunutím riadkov zmeníte poradie projektov na webe, potom kliknite na \"Uložiť poradie\".",
+      "saveOrder": "Uložiť poradie",
+      "saveOrderSuccess": "Poradie projektov uložené",
+      "saveOrderError": "Nepodarilo sa uložiť poradie",
+      "deleMassage": "Chcete vymazať",
+      "projectDescription": "Popis projektu",
+      "endDate": "Dátum ukončenia",
+      "square": "Plocha",
+      "team": "Tím",
+      "projectHeader": "Obrázok hlavičky projektu",
+      "preview": "Náhľad projektu",
+      "blueprintImage": "Obrázok plánu",
+      "ifYouWantToChangeImage1": "Ak chcete",
+      "ifYouWantToChangeImage2": "zmeniť obrázok, prosím vyberte súbor",
+      "ifYouWantToChangeImage3": "zmeniť",
+      "ifYouWantToChangeImage4": "pridať",
+      "imagesInsideTheProject": "Obrázky v projekte",
+      "addNewImages": "Pridať nové fotky",
+      "saving": "Ukladanie...",
+      "saveSuccess": "Zmeny uložené!",
+      "saveError": "Nepodarilo sa uložiť zmeny",
+      "removeImageConfirm": "Odstrániť tento obrázok?"
+    },
+    "cropImages": {
+      "open_close": "orezávanie obrázkov",
+      "cropImages": "Orezať obrázky v projektoch",
+      "edit": "Upraviť",
+      "projectHeader": "Hlavička projektu",
+      "projectPreview": "Náhľad projektu",
+      "projectBlueprint": "Plán",
+      "imagesInsideTheProject": "Obrázky v projekte",
+      "close": "Zavrieť",
+      "cropImage": "Orezať fotografiu",
+      "preview": "Náhľad",
+      "croppedImage": "Orezaná fotografia",
+      "noCroppedImage": "Ešte ste neorezali fotografiu",
+      "save": "Uložiť zmeny",
+      "loading": "Načítava sa..."
+    },
+    "languages": {
+      "title": "Jazyky stránky"
+    },
+    "changePassword": {
+      "open_close": "zmeniť heslo",
+      "title": "Zmena hesla",
+      "forcedHint": "Pred pokračovaním musíte nastaviť nové heslo.",
+      "current": "Aktuálne heslo",
+      "new": "Nové heslo",
+      "confirm": "Potvrďte nové heslo",
+      "submit": "Uložiť nové heslo",
+      "success": "Heslo zmenené",
+      "error": "Nepodarilo sa zmeniť heslo",
+      "tooShort": "Heslo musí mať aspoň 8 znakov",
+      "mismatch": "Heslá sa nezhodujú",
+      "wrongCurrent": "Nesprávne aktuálne heslo"
+    }
+  },
+  "footer": {
+    "contacts": {
+      "title": "Kontakty",
+      "phone": "Telefón",
+      "email": "Email"
+    },
+    "social_media": {
+      "title": "Sociálne médiá",
+      "viber": "Viber",
+      "instagram": "Instagram",
+      "telegram": "Telegram"
+    },
+    "working_hours": {
+      "title": "Pracovné hodiny",
+      "Monday-Friday": "Pondelok - Piatok",
+      "Saturday": "Sobota",
+      "Sunday": "Nedeľa",
+      "closed": "Zatvorené"
+    },
+    "map": "Sme na mape",
+    "copyright": "Všetky práva vyhradené"
+  },
+  "authForm": {
+    "auth": "Autorizácia",
+    "registration": "Registrácia",
+    "login1": "Prihlásenie",
+    "login2": "Prihlásiť sa",
+    "register1": "Registrovať",
+    "register2": "Zaregistrovať sa",
+    "username": "Používateľské meno",
+    "password": "Heslo",
+    "dontHaveAnAccount": "Nemáte účet?",
+    "haveAnAccount": "Už máte účet?",
+    "toTheHomePage": "Prejsť na domovskú stránku",
+    "feedbacks": {
+      "usernameTaken": "Toto používateľské meno je už obsadené. Prosím vyberte si iné",
+      "emailTaken": "Tento email je už priradený k účtu. Prosím použite iný email",
+      "registrationSuccess": "Ste teraz zaregistrovaný - prosím prihláste sa do svojho účtu",
+      "invalidPassword": "Neplatné heslo. Prosím skontrolujte svoje údaje",
+      "userNotFound": "Používateľ s týmto používateľským menom nebol nájdený"
+    }
+  },
+  "loader": [
+    "Načítavanie...",
+    "Čoskoro bude pripravené...",
+    "Urobili ste čaj?",
+    "Trpezlivosť je cnosť!"
+  ],
+  "projects": {
+    "prev": "Predchádzajúci projekt",
+    "next": "Nasledujúci projekt",
+    "projectDescription": "Popis projektu",
+    "placement": "Umiestnenie",
+    "square": "Plocha",
+    "endDate": "Dátum dokončenia",
+    "team": "Tím",
+    "blueprintDescription": "Plánovanie",
+    "project6": {
+      "name": "Apartmán v rezidenčnom komplexe Loft",
+      "city": "Dnipro",
+      "country": "Ukrajina",
+      "brief": "Apartmán pre manželský pár, ktorý miluje minimalizmus a oceňuje všetky najnovšie inovácie v interiérovom dizajne. Celková plocha apartmánu je 108 m² a jeho dizajn sa vyznačuje sofistikovanosťou a pozornosťou k detailom, ktoré sú investované do každého rohu a prvku.",
+      "end_date": "implementácia plánovaná na rok 2024",
+      "area": "108 m²",
+      "team": "Marina Prokhorova, Kateryna Sytnyk",
+      "drawing_description": "Apartmán sa nachádza v viacposchodovej budove v centre mesta. Minimalistický štýl harmonizuje s mestskými výhľadmi. Dispozícia kladie dôraz na život v srdci Dnipra. Priestranná obývacia izba v open space štýle obsahuje všetko potrebné na prijímanie hostí a pohodlný život pre dvoch. Pomerne priestranná spálňa je kombinovaná s šatníkom, dvoma kúpeľňami a technickou miestnosťou — všetko potrebné pre pohodlný život ako pár. A ak príde návšteva, vždy je k dispozícii malá, ale funkčná izba pre hostí."
+    },
+    "project8": {
+      "name": "Karaoke bar v steampunkovom štýle",
+      "city": "Dnipro",
+      "country": "Ukrajina",
+      "brief": "Karaoke bar v steampunkovom štýle, ktorý sa nachádza v centre mesta a má dve miestnosti: miestnosť s vodnou fajkou a diskotékovú miestnosť a karaoke miestnosť. Každý prvok tohto projektu stelesňuje všetky kreatívne nápady nášho tímu, pričom každý roh je exkluzívnym vývojom. Na tomto mieste ožívajú veci, pretože každý detail má dynamiku a schopnosť meniť farbu.",
+      "end_date": "2021",
+      "area": "okolo 250 m²",
+      "team": "Marina Prokhorova, Olena Prytysk, Kateryna Sytnyk, Leonid Startsev",
+      "drawing_description": "Plocha baru je rozdelená na 2 zóny. Zóna vodnej fajky obsahuje veľký barový pult, 3 súkromné kabínky a priestor pre diskotékové a lounge párty. K dispozícii je aj karaoke zóna. Kuchynské a technické priestory sú úplne oddelené od priestoru pre hostí. Centrálnym prvkom haly je exkluzívny luster navrhnutý na objednávku."
+    },
+    "project190": {
+      "name": "Townhouse",
+      "city": "Kyjev",
+      "country": "Ukrajina",
+      "brief": "Dvojpodlažný townhouse v lesnatej oblasti neďaleko Kyjeva s veľmi zaujímavou kombináciou štýlov. V tomto projekte sa loftový štýl spája s provensálskym. Toto bolo želanie klienta a výsledkom je tento fascinujúci dizajn.",
+      "end_date": "V priebehu realizácie",
+      "area": "150 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Olga Taran",
+      "drawing_description": "Dispozícia je jasne rozdelená do dvoch zón na rôznych podlažiach. Prvé poschodie je určené pre voľný čas a prijímanie hostí v loftovom štýle, zatiaľ čo druhé poschodie je viac súkromné a útulné, s spálňou v provensálskom štýle a detskými izbami."
+    },
+    "project191": {
+      "name": "Rezidenčný komplex Sviatobor",
+      "city": "Kyjev",
+      "country": "Ukrajina",
+      "brief": "Apartmán pre mladý pár, nachádzajúci sa v lesnatej oblasti centrálneho Kyjeva. Obývacia izba je spojená s kuchyňou, so samostatnou spálňou a detskou izbou.",
+      "end_date": "2022",
+      "area": "62 m²",
+      "team": "Marina Prokhorova, Olga Taran",
+      "drawing_description": "Apartmán pre mladý pár sa nachádza v lesnej zóne centrálneho Kyjeva, s kombinovanou obývacou izbou a kuchyňou, so samostatnou spálňou a detskou izbou."
+    },
+    "project192": {
+      "name": "Rezidenčný komplex Brama",
+      "city": "Dnipro",
+      "country": "Ukrajina",
+      "brief": ".",
+      "end_date": "2022",
+      "area": "48 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "Tento prenajímaný priestor má malú plochu, ale obsahuje množstvo riešení pre úložný priestor, ako napríklad dve skrine v predsieni a šatník v spálni. Kuchyňa má samostatný priestor pre obývaciu izbu, ktorá môže slúžiť aj ako spací priestor."
+    },
+    "project193": {
+      "name": "Apartmán v historickej časti Dnipra",
+      "city": "Dnipro",
+      "country": "Ukrajina",
+      "area": "48 m²",
+      "brief": "Apartmán pre pár, ktorý miluje minimalizmus a oceňuje najnovšie trendy v interiérovom dizajne. Celková plocha apartmánu je 48 m² a jeho dizajn vyniká sofistikovanosťou a pozornosťou k detailom.",
+      "end_date": "2022",
+      "team": "Ekaterina Sytnyk, Marina Prokhorova",
+      "drawing_description": "Útulný garsónkový apartmán. Historický klasický štýl určuje dispozíciu. Všetky zóny sú oddelené. Veľká obývacia izba obsahuje krb a kuchyňa má balkón s úžasným výhľadom na mesto. Spálňa je útulná a priestranná. Celková atmosféra vyvoláva pocit života v historickej Európe."
+    },
+    "project198": {
+      "name": "Apartmán v rezidenčnom komplexe Comfort Town",
+      "city": "Kyjev",
+      "country": "Ukrajina",
+      "brief": "Útulný apartmán pre rodinu s tromi členmi. Majitelia preferujú svetlé odtiene a prírodné materiály, čo vedie k minimalistickému interiéru s prvkami vycibreného klasického štýlu.",
+      "end_date": "2020",
+      "area": "60 m²",
+      "team": "Marina Prokhorova, Olena Pritisk, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "Veľká obývacia izba spojená s kuchyňou a jedálenskou časťou pre teplé rodinné večery. Spálňa pre dospelých má veľké okná a je dobre osvetlená cez deň, s útulným osvetlením na večer. Detská izba je malá, ale pôsobí útulne a priestranne vďaka rozumnému usporiadaniu nábytku. Apartmán tiež obsahuje kúpeľňu a hosťovské WC."
+    },
+    "project200": {
+      "name": "Dom na svahoch Dnipra",
+      "city": "Dnipro",
+      "country": "Ukrajina",
+      "brief": "Súkromný dom situovaný na svahoch rieky Dnipro, naplnený duchom tejto mocnej rieky vďaka výhľadom z okien. Štýl domu odráža životný štýl páru a ich dvoch detí. Všetky priestory by mali byť dobre osvetlené a kompozované, s miestami na natáčanie v každom rohu, keďže majiteľ je známy bloger.",
+      "end_date": "2023",
+      "area": "150 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "Prvé a druhé poschodie sú jasne rozdelené do zón. Prvé poschodie zahŕňa obývaciu izbu, kuchyňu a priestor na prijímanie hostí, zatiaľ čo druhé poschodie je súkromné, s izbami pre každého člena rodiny. Dom obsahuje dve kúpeľne a schodisko, ktoré je kompozičným prvkom domu."
+    },
+    "project207": {
+      "name": "Smart Apartmán 1",
+      "city": "Kyjev",
+      "country": "Ukrajina",
+      "brief": ".",
+      "end_date": "2022",
+      "area": "32 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "."
+    },
+    "project208": {
+      "name": "Smart Apartmán 2",
+      "city": "Kyjev",
+      "country": "Ukrajina",
+      "brief": ".",
+      "end_date": "2022",
+      "area": "31 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "."
+    }
+  }
+}

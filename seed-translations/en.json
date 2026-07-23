@@ -1,0 +1,488 @@
+{
+  "navbar": {
+    "mainPage": "Home",
+    "projectsPage": "Projects",
+    "aboutPage": "About",
+    "contactsPage": "Contact us",
+    "pricesPage": "Prices",
+    "editPage": "Edit",
+    "logoutButton": "Log out"
+  },
+  "mainPage": {
+    "goToTheProject": "To the project",
+    "projects": {
+      "loft": "Apartment in complex «Loft»",
+      "chehova": "A house on Dnipro's slopes",
+      "karaoke": "Karaoke bar in Steampunk style"
+    },
+    "block1": {
+      "titlePartOne": "Each project we develop",
+      "titlePartTwo": "as the most important one",
+      "mainTextPartOne": "Every project we develop is the most important task for us. We approach each job with great enthusiasm and responsibility, regardless of its scope or complexity. Our approach is based on the belief that every project has the potential to change our clients' lives and contribute to their success.",
+      "mainTextPartTwo": "Our goal is not just to meet clients' expectations but to exceed them by creating solutions that help them reach new heights in their activities. We believe that only such an approach can create truly meaningful and lasting results in the field of project development.",
+      "button": "Learn more"
+    },
+    "block2": {
+      "categories": {
+        "publicInteriors": {
+          "title": "Public Interiors",
+          "subtitle": "Restaurants, offices and commercial spaces"
+        },
+        "residentialInteriorsOne": {
+          "title": "Residential Interiors",
+          "subtitle": "Apartments"
+        },
+        "residentialInteriorsTwo": {
+          "title": "Residential Interiors",
+          "subtitle": "Private houses"
+        }
+      }
+    },
+    "block3": {
+      "title": "Our Team - Your Success",
+      "mainTextPartOne": "We are a team of experts who understand that every project is a significant undertaking. Our approach is to treat every project as the most important task, regardless of its scope or complexity. We bring passion and responsibility to our work because we believe that every project has the potential to change our clients' lives and contribute to their success.",
+      "mainTextPartTwo": "Our goal is not just to meet clients' expectations but to exceed them. We create solutions that help clients reach new heights in their activities. We believe that only such an approach can deliver truly meaningful and lasting results in the field of project development.",
+      "button": "Learn more about us"
+    },
+    "block4": {
+      "title": "Join Our Team",
+      "mainTextPartOne": "Welcome to our team! We are looking for talented and energetic individuals ready to make a significant contribution to our projects. We offer diverse tasks and opportunities for growth.",
+      "mainTextPartTwo": "If you share our mission and are ready to work in a friendly environment, don’t hesitate to join us!",
+      "button": "Contact Us"
+    },
+    "block5": {
+      "title": "Find Out the Cost of Our Services",
+      "mainTextPartOne": "We are ready to provide you with information about the cost of our services. Every project is important to us, and we are eager to consider your needs and questions.",
+      "mainTextPartTwo": "Contact us for a personalized consultation and cost estimate. We strive to provide you with the best solutions to achieve your goals.",
+      "button": "Get a Quote"
+    }
+  },
+  "projectsPage": {
+    "ourProjects": "Our projects",
+    "categories": {
+      "all": "All",
+      "publicInteriors": "Public interiors",
+      "apartments": "Apartments",
+      "privateHouses": "Private houses"
+    }
+  },
+  "aboutPage": {
+    "aboutUs": "About Us",
+    "block1": {
+      "title": "Our History",
+      "mainTextPartOne": "For over 20 years, our team of professionals has been working in the field of interior design, attracting clients through reviews and recommendations. It is time to keep up with scientific and technical progress and create our own information resource.",
+      "mainTextPartTwo": "Working separately and occasionally implementing successful joint projects, our team of designers and architects decided to unite and create a community. In modern conditions, it is simply necessary to have a platform for storing and viewing design projects."
+    },
+    "block2": {
+      "Marina": {
+        "name": "Marina Prokhorova",
+        "jobTitle": "Interior Designer, Architect"
+      },
+      "Olha": {
+        "name": "Olha Taran",
+        "jobTitle": "Interior Designer"
+      },
+      "Kateryna": {
+        "name": "Kateryna Sytnyk",
+        "jobTitle": "Architect"
+      },
+      "Leonid": {
+        "name": "Leonid Startsev",
+        "jobTitle": "Interior Designer, Visualizer"
+      }
+    },
+    "block3": {
+      "title": "Team Ideology",
+      "mainTextPartOne": "We provide detailed information about the cost of our services, taking into account the individual needs of each client. Every project is important to us, and we carefully analyze your requirements and questions to offer the best solutions that meet your goals.",
+      "mainTextPartTwo": "Contact us for a personalized consultation and an accurate cost estimate for your project. We strive to provide high-quality solutions that will help you achieve success and implement your ideas efficiently and on time."
+    },
+    "block4": {
+      "ourValues": "Our Values",
+      "valuesList": [
+        {
+          "title": "PROFESSIONALISM",
+          "content": "We are experts in our field; We build systematic work; We build effective communication; We apply an individual approach to each client; We continuously develop professionally and learn."
+        },
+        {
+          "title": "INNOVATIONS",
+          "content": "We are open to new ideas and technologies; We are proactive; We create an atmosphere that stimulates creative search, the birth of creative ideas; We strive to offer what others cannot."
+        },
+        {
+          "title": "REPUTATION",
+          "content": "This is transparency, honesty, and reliability; This is clear fulfillment of contractual obligations; This is positive client feedback; This is compliance with legislation."
+        },
+        {
+          "title": "TEAM",
+          "content": "We are united by a single goal; We are focused on a common final result; We are cohesive and support each other in achieving set tasks."
+        },
+        {
+          "title": "SAFETY",
+          "content": "This is the guarantee of preventing threats and risks for employees, partners, and the environment; This is a comprehensive approach to safety issues; This is a one hundred percent backup for all vital systems; This is high-tech engineering of the warehouse complex."
+        },
+        {
+          "title": "QUALITY",
+          "content": "We perform work according to the existing quality system; We control every stage of the process and its compliance with existing quality standards; All processes comply with international standards and are regulated by written instructions; A risk analysis system is implemented."
+        }
+      ]
+    }
+  },
+  "contactsPage": {
+    "contacts": "Contacts",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "viber": "Viber",
+    "email": "Email",
+    "telephone": "Telephone"
+  },
+  "pricesPage": {
+    "ourPrices": "Our Prices",
+    "tariff1": {
+      "size": "Premises up to 40m²",
+      "price": "Price: $30/m²"
+    },
+    "tariff2": {
+      "size": "Premises 40-100m²",
+      "price": "Price: $25/m²"
+    },
+    "tariff3": {
+      "size": "Premises from 100m²*",
+      "price": "Price: $20/m²"
+    },
+    "tariff4": {
+      "size": "Author's Support",
+      "price": "Price: $250/month"
+    },
+    "button": "Contact Us",
+    "additionalInfo": "*Price for projects with large areas is discussed individually"
+  },
+  "editPage": {
+    "adminPanel": "Administration Panel",
+    "createNewProject": {
+      "open": "Open",
+      "close": "Close",
+      "open_close": "project creation",
+      "create": "Create project",
+      "optional": "(optional)",
+      "requiredHint": "Marked fields are required, the rest can be filled in later",
+      "submitting": "Creating project and translating…",
+      "success": "Project created successfully!",
+      "error": "Failed to create the project. Please try again.",
+      "translationFailed": "Project created, but translation failed for:",
+      "translationFailedHint": "The project is only visible in Ukrainian. Try the \"Retranslate\" button on the Edit Project tab.",
+      "title": "Create a new project",
+      "name": "Name",
+      "city": "City",
+      "country": "Country",
+      "specialization": {
+        "title": "Specialization",
+        "choose": "Choose a specialization",
+        "publicInteriors": "Public Interiors",
+        "apartments": "Apartments",
+        "privateHouses": "Private Houses"
+      },
+      "previewImage": "Image (Preview)",
+      "topProjectImage": "Image (Top of the project page)",
+      "projectDescription": "Project Description",
+      "endDate": "End Date",
+      "square": "Area (in square meters)",
+      "team": "Team",
+      "blueprintImage": "Blueprint (Image)",
+      "blueprintDescription": "Blueprint Description",
+      "imagesInsideTheProject": "Images (Inside the Project)",
+
+      "feedbacks": {
+        "name": {
+          "true": "Project name is suitable",
+          "false": "Project name is required"
+        },
+        "city": {
+          "true": "City name is suitable",
+          "false": "City name is required"
+        },
+        "country": {
+          "true": "Country name is suitable",
+          "false": "Country name is required"
+        },
+        "chooseSpecialization": "Choose specialization",
+        "projectDescription": {
+          "true": "Project description is suitable",
+          "false": "Project description is required"
+        },
+        "endDate": {
+          "true": "End date is suitable",
+          "false": "End date is required"
+        },
+        "square": {
+          "true": "Area is suitable",
+          "false": "Area is required"
+        },
+        "team": {
+          "true": "Team is suitable",
+          "false": "Team is required"
+        },
+        "blueprintDescriprion": {
+          "true": "Blueprint description is suitable",
+          "false": "Blueprint description is required"
+        }
+      }
+    },
+    "usersList": {
+      "open_close": "users list",
+      "users": "Users List",
+      "username": "Username",
+      "role": "Role",
+      "actions": "Actions",
+      "confirm": "Confirm changes",
+      "makeAdministrator": "Make Administrator",
+      "makeModerator": "Make Moderator",
+      "makeUser": "Make Regular User",
+      "itsYou": "it's you",
+      "noChanges": "You have not made any changes",
+      "roleUpdateError": "Failed to update role",
+      "searchPlaceholder": "Search by name...",
+      "filterAllRoles": "All roles",
+      "roleAdmin": "Administrator",
+      "roleModerator": "Moderator",
+      "roleUser": "User",
+      "noResults": "No results found",
+      "resetPassword": "Reset Password",
+      "resetPasswordConfirm": "Reset password for",
+      "resetPasswordSuccess": "Password reset. New temporary password for",
+      "resetPasswordNote": "Give this password to the user — it is shown only once and is not stored anywhere.",
+      "resetPasswordError": "Failed to reset password",
+      "ok": "OK",
+      "createUser": "Add User",
+      "createUserSubmit": "Create",
+      "createUserError": "Failed to create user"
+    },
+    "editProject": {
+      "open_close": "editing project",
+      "editProject": "Edit Projects",
+      "save": "Save",
+      "cancel": "Cancel",
+      "projectName": "Project Name",
+      "city": "City",
+      "country": "Country",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "retranslate": "Retranslate",
+      "retranslateSuccess": "Translation updated",
+      "retranslateError": "Failed to translate",
+      "reorderHint": "Drag rows to change the project order on the site, then click \"Save Order\".",
+      "saveOrder": "Save Order",
+      "saveOrderSuccess": "Project order saved",
+      "saveOrderError": "Failed to save order",
+      "deleMassage": "Do you want to delete",
+      "projectDescription": "Project Description",
+      "endDate": "End Date",
+      "square": "Area",
+      "team": "Team",
+      "projectHeader": "Project Header Image",
+      "preview": "Project Preview",
+      "blueprintImage": "Blueprint Image",
+      "ifYouWantToChangeImage1": "If you want to",
+      "ifYouWantToChangeImage2": "change the image, please select a file",
+      "ifYouWantToChangeImage3": "change",
+      "ifYouWantToChangeImage4": "add",
+      "imagesInsideTheProject": "Images inside the project",
+      "addNewImages": "Add new photos",
+      "saving": "Saving...",
+      "saveSuccess": "Changes saved!",
+      "saveError": "Failed to save changes",
+      "removeImageConfirm": "Delete this image?"
+    },
+    "cropImages": {
+      "open_close": "cropping images",
+      "cropImages": "Crop Images in Projects",
+      "edit": "Edit",
+      "projectHeader": "Project Header",
+      "projectPreview": "Project Preview",
+      "projectBlueprint": "Blueprint",
+      "imagesInsideTheProject": "Images inside the project",
+      "close": "Close",
+      "cropImage": "Crop the photo",
+      "preview": "Preview",
+      "croppedImage": "Cropped photo",
+      "noCroppedImage": "You have not cropped the photo yet",
+      "save": "Save changes",
+      "loading": "Loading..."
+    },
+    "languages": {
+      "title": "Site Languages"
+    },
+    "changePassword": {
+      "open_close": "change password",
+      "title": "Change Password",
+      "forcedHint": "You need to set a new password before you can continue.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "submit": "Save new password",
+      "success": "Password changed",
+      "error": "Failed to change password",
+      "tooShort": "Password must be at least 8 characters",
+      "mismatch": "Passwords do not match",
+      "wrongCurrent": "Incorrect current password"
+    }
+  },
+  "footer": {
+    "contacts": {
+      "title": "Contacts",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "social_media": {
+      "title": "Social Media",
+      "viber": "Viber",
+      "instagram": "Instagram",
+      "telegram": "Telegram"
+    },
+    "working_hours": {
+      "title": "Working Hours",
+      "Monday-Friday": "Monday - Friday",
+      "Saturday": "Saturday",
+      "Sunday": "Sunday",
+      "closed": "Closed"
+    },
+    "map": "We are on the map",
+    "copyright": "All rights reserved"
+  },
+  "authForm": {
+    "auth": "Authorization",
+    "registration": "Registration",
+    "login1": "Login",
+    "login2": "Log In",
+    "register1": "Register",
+    "register2": "Sign Up",
+    "username": "Username",
+    "password": "Password",
+    "dontHaveAnAccount": "Don't have an account?",
+    "haveAnAccount": "Already have an account?",
+    "toTheHomePage": "Go to Home Page",
+
+    "feedbacks": {
+      "usernameTaken": "This username is already taken. Please choose a different one",
+      "emailTaken": "This email is already associated with an account. Please use a different email",
+      "registrationSuccess": "You are now registered - please log in to your account",
+      "invalidPassword": "Invalid password. Please check your credentials",
+      "userNotFound": "User with this username not found"
+    }
+  },
+  "loader": [
+    "Loading...",
+    "Almost ready...",
+    "Did you make tea?",
+    "Patience is a virtue!"
+  ],
+  "projects": {
+    "prev": "Previous Project",
+    "next": "Next Project",
+    "projectDescription": "Project Description",
+    "placement": "Location",
+    "square": "Area",
+    "endDate": "Completion Date",
+    "team": "Team",
+    "blueprintDescription": "Layout",
+    "project6": {
+      "name": "Apartment in the Loft Residential Complex",
+      "city": "Dnipro",
+      "country": "Ukraine",
+      "brief": "An apartment for a married couple in love with minimalism and appreciating all the latest innovations in interior design. The total area of the apartment is 108 square meters, and its design is distinguished by sophistication and attention to detail, invested in every corner and element.",
+      "end_date": "implementation planned for 2024",
+      "area": "108 m²",
+      "team": "Marina Prokhorova, Kateryna Sytnyk",
+      "drawing_description": "The apartment is located in a multi-story building in the city center. The minimalist style harmonizes with urban views. The layout emphasizes life in the heart of Dnipro. The spacious open-space living room includes everything necessary for hosting guests and comfortable living for two. The fairly roomy bedroom is combined with a wardrobe, two bathrooms, and a utility room — everything needed for a comfortable life as a couple. And if guests come to visit, there’s always space in the small but functional guest room."
+    },
+    "project8": {
+      "name": "Karaoke Bar in Steampunk Style",
+      "city": "Dnipro",
+      "country": "Ukraine",
+      "brief": "A steampunk-style karaoke bar located in the city center with two rooms: a hookah-disco room and a karaoke room. Every element of this project embodies all the creative ideas of our team, with each corner being an exclusive development. In this place, things come to life, as every detail has dynamics and the ability to change color.",
+      "end_date": "2021",
+      "area": "around 250 m²",
+      "team": "Marina Prokhorova, Olena Prytysk, Kateryna Sytnyk, Leonid Startsev",
+      "drawing_description": "The bar area is divided into 2 zones. The hookah zone features a large bar counter, 3 private booths, and space for disco and lounge parties. There is also the karaoke zone. The kitchen and utility areas are completely separated from the guest area. The centerpiece of the hall is an exclusive chandelier designed to order."
+    },
+    "project190": {
+      "name": "Townhouse",
+      "city": "Kyiv",
+      "country": "Ukraine",
+      "brief": "A two-story townhouse in a forested area near Kyiv with a very interesting combination of styles. In this project, loft style is blended with Provence. This was the client's request, and the result is this fascinating design.",
+      "end_date": "In Progress",
+      "area": "150 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Olga Taran",
+      "drawing_description": "The layout is clearly divided into two zones on different floors. The first floor is a leisure and guest reception area in a loft style, while the second floor is more private and cozy, with a bedroom in the 'Provence' style and children's rooms."
+    },
+    "project191": {
+      "name": "Sviatobor Residential Complex",
+      "city": "Kyiv",
+      "country": "Ukraine",
+      "brief": "An apartment for a young couple, located in the forested area of central Kyiv. The living room is combined with the kitchen, along with a separate bedroom and children's room.",
+      "end_date": "2022",
+      "area": "62 m²",
+      "team": "Marina Prokhorova, Olga Taran",
+      "drawing_description": "The apartment for a young couple is located in the forest zone of central Kyiv, with a combined living area and kitchen, along with a separate bedroom and children's room."
+    },
+    "project192": {
+      "name": "Brama Residential Complex",
+      "city": "Dnipro",
+      "country": "Ukraine",
+      "brief": ".",
+      "end_date": "2022",
+      "area": "48 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "This rental space has a small area but includes many storage solutions, such as two wardrobes in the entrance area and a dressing room in the bedroom. The kitchen has a separate space for a living room that could also serve as a sleeping area."
+    },
+    "project193": {
+      "name": "Apartment in the Historic Part of Dnipro",
+      "city": "Dnipro",
+      "country": "Ukraine",
+      "area": "48 m²",
+      "brief": "An apartment for a couple who love minimalism and appreciate the latest trends in interior design. The apartment's total area is 48 m², and its design stands out for its sophistication and attention to every detail.",
+      "end_date": "2022",
+      "team": "Ekaterina Sytnyk, Marina Prokhorova",
+      "drawing_description": "A cozy bachelor apartment. The historical classical style dictates the layout. All zones are separated. The large living room features a fireplace, and the kitchen has a balcony with an incredible city view. The bedroom is cozy and spacious. The overall atmosphere evokes the feeling of being in historical Europe."
+    },
+    "project198": {
+      "name": "Apartment in the Comfort Town Residential Complex",
+      "city": "Kyiv",
+      "country": "Ukraine",
+      "brief": "A cozy apartment for a family of three. The owners prefer light shades and natural materials, leading to a minimalist interior with elements of refined classic style.",
+      "end_date": "2020",
+      "area": "60 m²",
+      "team": "Marina Prokhorova, Olena Pritisk, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "A large living room combined with a kitchen-dining area for warm family evenings. The adults' bedroom has large windows and is well-lit during the day, with cozy lighting for the evening. The children's room is small but feels cozy and spacious due to the smart arrangement of furniture. The apartment also includes a bathroom and guest WC."
+    },
+    "project200": {
+      "name": "House on the Slopes of Dnipro",
+      "city": "Dnipro",
+      "country": "Ukraine",
+      "brief": "A private house situated on the slopes of the Dnipro River, filled with the spirit of the mighty river thanks to the views from the windows. The house style reflects the lifestyle of the couple and their two children. All areas should be well-lit and composed, with shooting zones included in every corner since the homeowner is a well-known blogger.",
+      "end_date": "2023",
+      "area": "150 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "The first and second floors are clearly divided into zones. The first floor includes a living room, kitchen, and guest reception area, while the second floor is private, with bedrooms for each family member. The house includes two bathrooms and a staircase, which is a compositional element of the home."
+    },
+    "project207": {
+      "name": "Smart Apartment 1",
+      "city": "Kyiv",
+      "country": "Ukraine",
+      "brief": ".",
+      "end_date": "2022",
+      "area": "32 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "."
+    },
+    "project208": {
+      "name": "Smart Apartment 2",
+      "city": "Kyiv",
+      "country": "Ukraine",
+      "brief": ".",
+      "end_date": "2022",
+      "area": "31 m²",
+      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "drawing_description": "."
+    }
+  }
+}
