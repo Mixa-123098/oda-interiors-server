@@ -308,7 +308,8 @@
       "saving": "Saving...",
       "saveSuccess": "Changes saved!",
       "saveError": "Failed to save changes",
-      "removeImageConfirm": "Delete this image?"
+      "removeImageConfirm": "Delete this image?",
+      "clickToCrop": "Click the photo to crop it"
     },
     "cropImages": {
       "open_close": "cropping images",

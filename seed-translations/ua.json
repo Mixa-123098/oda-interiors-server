@@ -305,7 +305,8 @@
       "saving": "Збереження...",
       "saveSuccess": "Зміни збережено!",
       "saveError": "Не вдалося зберегти зміни",
-      "removeImageConfirm": "Видалити це зображення?"
+      "removeImageConfirm": "Видалити це зображення?",
+      "clickToCrop": "Клікніть на фото, щоб обрізати"
     },
     "cropImages": {
       "open_close": "обрізку фотографій",
