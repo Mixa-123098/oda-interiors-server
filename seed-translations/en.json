@@ -284,6 +284,8 @@
       "retranslateSuccess": "Translation updated",
       "retranslateError": "Failed to translate",
       "editTranslations": "Translations",
+      "closeEditor": "Close",
+      "sharedFieldsHint": "These fields are shared across all languages of the project (specialization, area, photos).",
       "closeTranslations": "Close translations",
       "reorderHint": "Drag rows to change the project order on the site, then click \"Save Order\".",
       "saveOrder": "Save Order",

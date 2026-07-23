@@ -283,6 +283,8 @@
       "retranslateSuccess": "Preklad aktualizovaný",
       "retranslateError": "Nepodarilo sa preložiť",
       "editTranslations": "Preklady",
+      "closeEditor": "Zavrieť",
+      "sharedFieldsHint": "Tieto polia sú spoločné pre všetky jazyky projektu (špecializácia, plocha, fotky).",
       "closeTranslations": "Zavrieť preklady",
       "reorderHint": "Presunutím riadkov zmeníte poradie projektov na webe, potom kliknite na \"Uložiť poradie\".",
       "saveOrder": "Uložiť poradie",
