@@ -79,6 +79,17 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+// Content-editing routes (create/edit projects, images) are open to
+// moderators too. User management and site-language management stay
+// requireAdmin-only, and deleting a whole project stays admin-only even
+// though the rest of project editing is shared with moderators.
+function requireStaff(req, res, next) {
+  if (req.user?.role !== "admin" && req.user?.role !== "moderator") {
+    return res.status(403).json({ error: "forbidden" });
+  }
+  next();
+}
+
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
@@ -156,7 +167,7 @@ app.get("/project_imges", async (req, res) => {
   }
 });
 
-app.delete("/project_imges/:id", authenticateToken, requireAdmin, async (req, res) => {
+app.delete("/project_imges/:id", authenticateToken, requireStaff, async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
@@ -562,7 +573,7 @@ app.put("/me/password", authenticateToken, async (req, res) => {
 });
 
 let projectdir;
-app.post("/create_post", authenticateToken, requireAdmin, async (req, res) => {
+app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
   try {
     const {
       project_name,
@@ -679,7 +690,7 @@ app.post("/create_post", authenticateToken, requireAdmin, async (req, res) => {
 app.post(
   "/projects/:id/retranslate",
   authenticateToken,
-  requireAdmin,
+  requireStaff,
   async (req, res) => {
     const projectId = req.params.id;
     const client = await pool.connect();
@@ -777,7 +788,7 @@ const upload = multer({
   },
 }).single("file");
 
-app.post("/upload", authenticateToken, requireAdmin, (req, res) => {
+app.post("/upload", authenticateToken, requireStaff, (req, res) => {
   upload(req, res, (err) => {
     if (err) {
       if (err.code === "LIMIT_FILE_SIZE") {
@@ -797,7 +808,7 @@ app.post("/upload", authenticateToken, requireAdmin, (req, res) => {
     res.json({ success: true, filename: req.file.filename });
   });
 });
-app.put("/update_project/:projectId", authenticateToken, requireAdmin, async (req, res) => {
+app.put("/update_project/:projectId", authenticateToken, requireStaff, async (req, res) => {
   try {
     const projectId = req.params.projectId;
 
@@ -878,7 +889,7 @@ app.put("/update_project/:projectId", authenticateToken, requireAdmin, async (re
 // Lets the admin reorder projects on the public portfolio page from the admin
 // panel (drag-and-drop in the Edit Project tab) instead of needing a manual
 // DB update. Body: [{ id, order }, ...] for every project being reordered.
-app.put("/projects_order", authenticateToken, requireAdmin, async (req, res) => {
+app.put("/projects_order", authenticateToken, requireStaff, async (req, res) => {
   const { order } = req.body;
   if (!Array.isArray(order)) {
     return res.status(400).json({ error: "invalid_body" });
