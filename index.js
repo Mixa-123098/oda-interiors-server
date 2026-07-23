@@ -90,6 +90,26 @@ function requireStaff(req, res, next) {
   next();
 }
 
+// For public endpoints that behave differently for staff (e.g. hidden
+// projects): populates req.user from the cookie when present and valid,
+// but — unlike authenticateToken — never rejects the request when it's
+// missing or bad. Anonymous visitors just see req.user stay undefined.
+function optionalAuth(req, res, next) {
+  const token = req.cookies.token;
+  if (token) {
+    try {
+      req.user = jwt.verify(token, JWT_SECRET);
+    } catch (error) {
+      // ignore - treat as anonymous
+    }
+  }
+  next();
+}
+
+function isStaffUser(req) {
+  return req.user?.role === "admin" || req.user?.role === "moderator";
+}
+
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
@@ -103,11 +123,13 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 
-app.get("/projects", async (req, res) => {
+app.get("/projects", optionalAuth, async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT * FROM projects ORDER BY display_order NULLS LAST, id"
+      isStaffUser(req)
+        ? "SELECT * FROM projects ORDER BY display_order NULLS LAST, id"
+        : "SELECT * FROM projects WHERE is_hidden = false ORDER BY display_order NULLS LAST, id"
     );
     client.release();
     res.json(result.rows);
@@ -116,6 +138,14 @@ app.get("/projects", async (req, res) => {
     res.status(500).json({ error: "internal_error" });
   }
 });
+
+// Draft projects (is_hidden) — an admin/moderator not ready to publish yet
+// — must be completely invisible to the public: not just absent from the
+// listing but unreachable by direct link too. That means every endpoint a
+// public project page reads from (blueprints, gallery images, translations)
+// has to hide rows belonging to a hidden project for anonymous requests,
+// while staff (who need to preview a draft as it will actually look once
+// published) still see everything.
 
 app.delete("/delete_project/:id", authenticateToken, requireAdmin, async (req, res) => {
   const projectId = req.params.id;
@@ -138,11 +168,45 @@ app.delete("/delete_project/:id", authenticateToken, requireAdmin, async (req, r
   }
 });
 
-app.get("/blueprints", async (req, res) => {
+// Moderators can't delete a project, but they can pull it out of public
+// view (e.g. a draft that isn't ready) — same requireStaff as the rest of
+// project editing.
+app.put(
+  "/projects/:id/visibility",
+  authenticateToken,
+  requireStaff,
+  async (req, res) => {
+    const { is_hidden } = req.body;
+    if (typeof is_hidden !== "boolean") {
+      return res.status(400).json({ error: "invalid_body" });
+    }
+    try {
+      const client = await pool.connect();
+      const result = await client.query(
+        "UPDATE projects SET is_hidden = $1 WHERE id = $2",
+        [is_hidden, req.params.id]
+      );
+      client.release();
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: "project_not_found" });
+      }
+      res.json({ success: true, is_hidden });
+    } catch (error) {
+      console.error("Error updating project visibility:", error);
+      res.status(500).json({ error: "internal_error" });
+    }
+  }
+);
+
+app.get("/blueprints", optionalAuth, async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT * FROM projects_blueprints ORDER BY project_id"
+      isStaffUser(req)
+        ? "SELECT * FROM projects_blueprints ORDER BY project_id"
+        : `SELECT pb.* FROM projects_blueprints pb
+           JOIN projects p ON p.id = pb.project_id
+           WHERE p.is_hidden = false ORDER BY pb.project_id`
     );
     client.release();
     res.json(result.rows);
@@ -152,11 +216,15 @@ app.get("/blueprints", async (req, res) => {
   }
 });
 
-app.get("/project_imges", async (req, res) => {
+app.get("/project_imges", optionalAuth, async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT * FROM projects_imges ORDER BY project_id"
+      isStaffUser(req)
+        ? "SELECT * FROM projects_imges ORDER BY project_id"
+        : `SELECT pi.* FROM projects_imges pi
+           JOIN projects p ON p.id = pi.project_id
+           WHERE p.is_hidden = false ORDER BY pi.project_id`
     );
 
     client.release();
@@ -186,11 +254,15 @@ app.delete("/project_imges/:id", authenticateToken, requireStaff, async (req, re
   }
 });
 
-app.get("/project_translations", async (req, res) => {
+app.get("/project_translations", optionalAuth, async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT * FROM project_translations ORDER BY project_id"
+      isStaffUser(req)
+        ? "SELECT * FROM project_translations ORDER BY project_id"
+        : `SELECT pt.* FROM project_translations pt
+           JOIN projects p ON p.id = pt.project_id
+           WHERE p.is_hidden = false ORDER BY pt.project_id`
     );
     client.release();
     res.json(result.rows);
@@ -517,6 +589,47 @@ app.put(
         error: "internal_error",
         details: error.message,
       });
+    }
+  }
+);
+
+// Delete a user account. Two guards: an admin can't delete themselves
+// (avoids an accidental self-lockout mid-session) and can't delete the last
+// remaining admin account (avoids locking everyone out of the admin panel
+// entirely, since only an admin can create/promote other admins).
+app.delete(
+  "/users/:username",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
+    const { username } = req.params;
+    if (username === req.user.username) {
+      return res.status(400).json({ error: "cannot_delete_self" });
+    }
+    const client = await pool.connect();
+    try {
+      const { rows } = await client.query(
+        "SELECT role FROM users WHERE username = $1",
+        [username]
+      );
+      if (rows.length === 0) {
+        return res.status(404).json({ error: "user_not_found" });
+      }
+      if (rows[0].role === "admin") {
+        const { rows: adminCount } = await client.query(
+          "SELECT COUNT(*) FROM users WHERE role = 'admin'"
+        );
+        if (Number(adminCount[0].count) <= 1) {
+          return res.status(400).json({ error: "cannot_delete_last_admin" });
+        }
+      }
+      await client.query("DELETE FROM users WHERE username = $1", [username]);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ error: "internal_error" });
+    } finally {
+      client.release();
     }
   }
 );
@@ -1160,6 +1273,9 @@ async function ensureSchema() {
     );
     await client.query(
       "ALTER TABLE projects ADD COLUMN IF NOT EXISTS source_lang TEXT NOT NULL DEFAULT 'ua'"
+    );
+    await client.query(
+      "ALTER TABLE projects ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN NOT NULL DEFAULT false"
     );
 
     // Built-in UI copy (ua/en/sk) used to ship only as static JSON files in
