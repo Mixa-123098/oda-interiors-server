@@ -124,6 +124,25 @@ app.get("/project_imges", async (req, res) => {
   }
 });
 
+app.delete("/project_imges/:id", authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "DELETE FROM projects_imges WHERE id = $1",
+      [req.params.id]
+    );
+    client.release();
+    if (result.rowCount === 1) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: "not_found" });
+    }
+  } catch (error) {
+    console.error("Ошибка выполнения запроса:", error);
+    res.status(500).json({ error: "Произошла ошибка" });
+  }
+});
+
 app.get("/project_translations", async (req, res) => {
   try {
     const client = await pool.connect();
@@ -618,114 +637,35 @@ app.put("/update_project/:projectId", authenticateToken, requireAdmin, async (re
 
     const updateImgesQuery = `UPDATE projects_imges SET  "order" = $1  WHERE project_id = $2 And id = $3`;
 
-    if (project_header_img && project_img_src) {
-      const updateProjectQuery = `
-      UPDATE projects 
-      SET 
-        project_name = $1, 
-        project_city = $2, 
-        project_country = $3, 
-        project_specialization = $4, 
-        project_img_src = $5, 
-        project_header_img = $6, 
-        project_brief = $7, 
-        project_finish_date = $8, 
-        project_square = $9, 
+    const updateProjectQuery = `
+      UPDATE projects
+      SET
+        project_name = $1,
+        project_city = $2,
+        project_country = $3,
+        project_specialization = $4,
+        project_img_src = COALESCE($5, project_img_src),
+        project_header_img = COALESCE($6, project_header_img),
+        project_brief = $7,
+        project_finish_date = $8,
+        project_square = $9,
         project_team = $10
       WHERE id = $11`;
-      await client.query(updateProjectQuery, [
-        project_name,
-        project_city,
-        project_country,
-        project_specialization,
-        project_img_src,
-        project_header_img,
-        project_brief,
-        project_finish_date,
-        project_square,
-        project_team,
-        projectId,
-      ]);
-    } else if (project_header_img) {
-      const updateProjectQuery = `
-      UPDATE projects 
-      SET 
-        project_name = $1, 
-        project_city = $2, 
-        project_country = $3, 
-        project_specialization = $4, 
-        project_header_img = $5, 
-        project_brief = $6, 
-        project_finish_date = $7, 
-        project_square = $8, 
-        project_team = $9
-      WHERE id = $10`;
-      await client.query(updateProjectQuery, [
-        project_name,
-        project_city,
-        project_country,
-        project_specialization,
-        project_header_img,
-        project_brief,
-        project_finish_date,
-        project_square,
-        project_team,
-        projectId,
-      ]);
-    } else if (project_img_src) {
-      const updateProjectQuery = `
-      UPDATE projects 
-      SET 
-        project_name = $1, 
-        project_city = $2, 
-        project_country = $3, 
-        project_specialization = $4, 
-        project_img_src = $5, 
-        project_brief = $6, 
-        project_finish_date = $7, 
-        project_square = $8, 
-        project_team = $9
-      WHERE id = $10`;
-      await client.query(updateProjectQuery, [
-        project_name,
-        project_city,
-        project_country,
-        project_specialization,
-        project_img_src,
-        project_brief,
-        project_finish_date,
-        project_square,
-        project_team,
-        projectId,
-      ]);
-    } else {
-      const updateProjectQuery = `
-      UPDATE projects 
-      SET 
-        project_name = $1, 
-        project_city = $2, 
-        project_country = $3, 
-        project_specialization = $4, 
+    await client.query(updateProjectQuery, [
+      project_name,
+      project_city,
+      project_country,
+      project_specialization,
+      project_img_src || null,
+      project_header_img || null,
+      project_brief,
+      project_finish_date,
+      project_square,
+      project_team,
+      projectId,
+    ]);
 
-        project_brief = $5, 
-        project_finish_date = $6, 
-        project_square = $7, 
-        project_team = $8
-      WHERE id = $9`;
-      await client.query(updateProjectQuery, [
-        project_name,
-        project_city,
-        project_country,
-        project_specialization,
-        project_brief,
-        project_finish_date,
-        project_square,
-        project_team,
-        projectId,
-      ]);
-    }
-
-    if (prew_img && prew_img) {
+    if (prew_img) {
       await client.query(updateBlueprintQuery, [prew_img, projectId]);
     }
 
