@@ -828,6 +828,7 @@ app.put("/update_project/:projectId", authenticateToken, requireStaff, async (re
       prew_img,
 
       imges_list,
+      new_images,
     } = req.body;
 
     const client = await pool.connect();
@@ -870,6 +871,24 @@ app.put("/update_project/:projectId", authenticateToken, requireStaff, async (re
 
     for (const imge of imges_list) {
       await client.query(updateImgesQuery, [imge.order, projectId, imge.id]);
+    }
+
+    // Photos added via the "add new photos" input in DragAndDropImges —
+    // gallery uploads weren't possible after project creation before this,
+    // only replacing the header/preview/blueprint slots was.
+    if (Array.isArray(new_images) && new_images.length > 0) {
+      const { rows: orderRows } = await client.query(
+        'SELECT COALESCE(MAX("order"), -1) AS max_order FROM projects_imges WHERE project_id = $1',
+        [projectId]
+      );
+      let nextOrder = orderRows[0].max_order + 1;
+      for (const img of new_images) {
+        await client.query(
+          'INSERT INTO projects_imges (img, project_id, "order") VALUES ($1, $2, $3)',
+          [img, projectId, nextOrder]
+        );
+        nextOrder++;
+      }
     }
 
     client.release();
