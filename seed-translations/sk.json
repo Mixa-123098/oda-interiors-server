@@ -74,6 +74,7 @@
       "mainTextPartTwo": "Pracujúc samostatne a občasne realizujúc úspešné spoločné projekty, sa náš tím dizajnérov a architektov rozhodol spojiť a vytvoriť komunitu. V moderných podmienkach je jednoducho potrebná platforma na uchovávanie a prezeranie dizajnových projektov."
     },
     "block2": {
+      "title": "Náš tím",
       "Marina": {
         "name": "Marina Prokhorova",
         "jobTitle": "Interiérová dizajnérka, architektka"
@@ -93,8 +94,8 @@
     },
     "block3": {
       "title": "Ideológia tímu",
-      "mainTextPartOne": "Poskytujeme podrobné informácie o cene našich služieb, zohľadňujúc individuálne potreby každého klienta. Každý projekt je pre nás dôležitý a starostlivo analyzujeme vaše požiadavky a otázky, aby sme ponúkli najlepšie riešenia, ktoré spĺňajú vaše ciele.",
-      "mainTextPartTwo": "Kontaktujte nás pre personalizovanú konzultáciu a presnú cenovú ponuku pre váš projekt. Usilujeme sa poskytnúť vysokokvalitné riešenia, ktoré vám pomôžu dosiahnuť úspech a efektívne a včas implementovať vaše nápady."
+      "mainTextPartOne": "Veríme, že kvalitný dizajn začína počúvaním — pochopením toho, ako naši klienti žijú, pracujú a snívajú, ešte predtým, než nakreslíme prvú líniu. Každý projekt vnímame ako spoluprácu, nie transakciu, postavenú na transparentnosti a vzájomnom rešpekte.",
+      "mainTextPartTwo": "Spájame funkčnosť s estetikou, technickú presnosť s tvorivou slobodou. Naším cieľom je vytvárať priestory, ktoré nielen krásne vyzerajú, ale skutočne zlepšujú život ľudí, ktorí v nich budú žiť dlhé roky."
     },
     "block4": {
       "ourValues": "Naše hodnoty",
@@ -124,6 +125,10 @@
           "content": "Vykonávame prácu podľa existujúceho systému kvality; Kontrolujeme každú fázu procesu a jej súlad s existujúcimi kvalitatívnymi normami; Všetky procesy sú v súlade s medzinárodnými normami a sú regulované písomnými inštrukciami; Je implementovaný systém analýzy rizík."
         }
       ]
+    },
+    "cta": {
+      "title": "Pripravení uviesť váš projekt do života?",
+      "button": "Kontaktujte nás"
     }
   },
   "contactsPage": {

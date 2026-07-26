@@ -74,6 +74,7 @@
       "mainTextPartTwo": "Working separately and occasionally implementing successful joint projects, our team of designers and architects decided to unite and create a community. In modern conditions, it is simply necessary to have a platform for storing and viewing design projects."
     },
     "block2": {
+      "title": "Our Team",
       "Marina": {
         "name": "Marina Prokhorova",
         "jobTitle": "Interior Designer, Architect"
@@ -93,8 +94,8 @@
     },
     "block3": {
       "title": "Team Ideology",
-      "mainTextPartOne": "We provide detailed information about the cost of our services, taking into account the individual needs of each client. Every project is important to us, and we carefully analyze your requirements and questions to offer the best solutions that meet your goals.",
-      "mainTextPartTwo": "Contact us for a personalized consultation and an accurate cost estimate for your project. We strive to provide high-quality solutions that will help you achieve success and implement your ideas efficiently and on time."
+      "mainTextPartOne": "We believe great design starts with listening — understanding how our clients live, work, and dream, before a single line is drawn. Every project is treated as a collaboration, not a transaction, built on transparency and mutual respect.",
+      "mainTextPartTwo": "We combine functionality with aesthetics, technical precision with creative freedom. Our goal is to create spaces that don't just look beautiful, but genuinely improve the way people live in them for years to come."
     },
     "block4": {
       "ourValues": "Our Values",
@@ -124,6 +125,10 @@
           "content": "We perform work according to the existing quality system; We control every stage of the process and its compliance with existing quality standards; All processes comply with international standards and are regulated by written instructions; A risk analysis system is implemented."
         }
       ]
+    },
+    "cta": {
+      "title": "Ready to bring your project to life?",
+      "button": "Contact Us"
     }
   },
   "contactsPage": {
