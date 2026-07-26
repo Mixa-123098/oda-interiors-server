@@ -418,6 +418,74 @@ app.post("/languages", authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+// Lets an admin fix a typo'd code or display name after the language was
+// already created (and possibly already has projects/translations using
+// it). Renaming the code has to cascade to every other table that stores it
+// by value - there's no FK enforcing this, so it's done in a transaction
+// here instead.
+app.put("/languages/:code", authenticateToken, requireAdmin, async (req, res) => {
+  const oldCode = req.params.code;
+  const newCode = (req.body.code || "").trim().toLowerCase();
+  const newName = (req.body.name || "").trim();
+
+  if (!/^[a-z]{2,3}$/.test(newCode)) {
+    return res.status(400).json({ error: "invalid_code" });
+  }
+  if (!newName) {
+    return res.status(400).json({ error: "missing_fields" });
+  }
+
+  const client = await pool.connect();
+  try {
+    const existing = await client.query(
+      "SELECT code FROM languages WHERE code = $1",
+      [oldCode]
+    );
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: "not_found" });
+    }
+
+    if (newCode !== oldCode) {
+      const conflict = await client.query(
+        "SELECT code FROM languages WHERE code = $1",
+        [newCode]
+      );
+      if (conflict.rows.length > 0) {
+        return res.status(409).json({ error: "language_exists" });
+      }
+    }
+
+    try {
+      await client.query("BEGIN");
+      await client.query(
+        "UPDATE languages SET code = $1, name = $2 WHERE code = $3",
+        [newCode, newName, oldCode]
+      );
+      if (newCode !== oldCode) {
+        await client.query(
+          "UPDATE project_translations SET lang = $1 WHERE lang = $2",
+          [newCode, oldCode]
+        );
+        await client.query(
+          "UPDATE projects SET source_lang = $1 WHERE source_lang = $2",
+          [newCode, oldCode]
+        );
+      }
+      await client.query("COMMIT");
+    } catch (txError) {
+      await client.query("ROLLBACK");
+      throw txError;
+    }
+
+    res.json({ success: true, code: newCode, name: newName });
+  } catch (error) {
+    console.error("Error updating language:", error);
+    res.status(500).json({ error: "internal_error" });
+  } finally {
+    client.release();
+  }
+});
+
 // All languages are equal now — no built-in/added distinction, any language
 // (including ua/en/sk) can be deleted. The one guard that remains: never let
 // the last language go, or the site is left with no UI text at all — same
