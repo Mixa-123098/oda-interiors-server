@@ -371,7 +371,11 @@
       "Sunday": "Sunday",
       "closed": "Closed"
     },
-    "map": "We are on the map",
+    "map": "Where We Work",
+    "cities": {
+      "kyiv": "Kyiv",
+      "dnipro": "Dnipro"
+    },
     "copyright": "All rights reserved"
   },
   "authForm": {

@@ -370,7 +370,11 @@
       "Sunday": "Nedeľa",
       "closed": "Zatvorené"
     },
-    "map": "Sme na mape",
+    "map": "Kde pôsobíme",
+    "cities": {
+      "kyiv": "Kyjev",
+      "dnipro": "Dnipro"
+    },
     "copyright": "Všetky práva vyhradené"
   },
   "authForm": {
