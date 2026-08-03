@@ -158,6 +158,52 @@ app.get("/projects", optionalAuth, async (req, res) => {
   }
 });
 
+// Dynamic sitemap: the static pages plus one URL per published (non-hidden)
+// project, so search engines can discover every project page. Served at the
+// site root via an nginx proxy (see nginx.conf).
+app.get("/sitemap.xml", async (req, res) => {
+  const base = (process.env.CLIENT_URL || "https://oda-interiors.com").replace(
+    /\/$/,
+    ""
+  );
+  try {
+    const client = await pool.connect();
+    const { rows } = await client.query(
+      "SELECT id FROM projects WHERE is_hidden = false ORDER BY id"
+    );
+    client.release();
+
+    const staticUrls = [
+      { loc: `${base}/`, priority: "1.0" },
+      { loc: `${base}/projects`, priority: "0.9" },
+      { loc: `${base}/about`, priority: "0.7" },
+      { loc: `${base}/price`, priority: "0.7" },
+      { loc: `${base}/contacts`, priority: "0.7" },
+    ];
+    const projectUrls = rows.map((r) => ({
+      loc: `${base}/projects/${r.id}`,
+      priority: "0.8",
+    }));
+
+    const xml =
+      '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+      [...staticUrls, ...projectUrls]
+        .map(
+          (u) =>
+            `  <url><loc>${u.loc}</loc><priority>${u.priority}</priority></url>`
+        )
+        .join("\n") +
+      "\n</urlset>\n";
+
+    res.set("Content-Type", "application/xml");
+    res.send(xml);
+  } catch (error) {
+    console.error("Error generating sitemap:", error);
+    res.status(500).send("");
+  }
+});
+
 // Draft projects (is_hidden) — an admin/moderator not ready to publish yet
 // — must be completely invisible to the public: not just absent from the
 // listing but unreachable by direct link too. That means every endpoint a
