@@ -110,6 +110,25 @@ function isStaffUser(req) {
   return req.user?.role === "admin" || req.user?.role === "moderator";
 }
 
+// Sends a Telegram message when TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID are set,
+// otherwise a silent no-op — so the contact form works (storing to the DB)
+// with or without Telegram configured. Never throws: a notification failure
+// must not fail the request that a lead depends on.
+async function notifyTelegram(text) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+    });
+  } catch (error) {
+    console.error("Telegram notification failed:", error.message);
+  }
+}
+
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
@@ -1181,6 +1200,95 @@ app.post("/upload", authenticateToken, requireStaff, (req, res) => {
     res.json({ success: true, filename: req.file.filename });
   });
 });
+
+// Public contact form. Stores the lead and fires a Telegram notification (if
+// configured). Kept deliberately permissive on input but length-capped to
+// blunt abuse; the honeypot field silently drops bots.
+app.post("/inquiries", async (req, res) => {
+  const { name, contact, message, website } = req.body || {};
+  // Honeypot: real users never fill a hidden "website" field; bots do.
+  if (website) return res.json({ success: true });
+
+  const clean = (v) => (typeof v === "string" ? v.trim().slice(0, 2000) : "");
+  const cName = clean(name);
+  const cContact = clean(contact);
+  const cMessage = clean(message);
+
+  if (!cContact && !cMessage) {
+    return res.status(400).json({ error: "empty_inquiry" });
+  }
+
+  try {
+    const client = await pool.connect();
+    await client.query(
+      "INSERT INTO inquiries (name, contact, message) VALUES ($1, $2, $3)",
+      [cName, cContact, cMessage]
+    );
+    client.release();
+
+    await notifyTelegram(
+      `🔔 Нова заявка з сайту\n\n` +
+        `Ім'я: ${cName || "—"}\n` +
+        `Контакт: ${cContact || "—"}\n` +
+        `Повідомлення: ${cMessage || "—"}`
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error saving inquiry:", error);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
+
+app.get("/inquiries", authenticateToken, requireStaff, async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "SELECT id, name, contact, message, is_read, created_at FROM inquiries ORDER BY created_at DESC"
+    );
+    client.release();
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching inquiries:", error);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
+
+app.patch("/inquiries/:id/read", authenticateToken, requireStaff, async (req, res) => {
+  const { is_read } = req.body;
+  if (typeof is_read !== "boolean") {
+    return res.status(400).json({ error: "invalid_body" });
+  }
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "UPDATE inquiries SET is_read = $1 WHERE id = $2",
+      [is_read, req.params.id]
+    );
+    client.release();
+    if (result.rowCount === 0) return res.status(404).json({ error: "not_found" });
+    res.json({ success: true, is_read });
+  } catch (error) {
+    console.error("Error updating inquiry:", error);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
+
+app.delete("/inquiries/:id", authenticateToken, requireStaff, async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "DELETE FROM inquiries WHERE id = $1",
+      [req.params.id]
+    );
+    client.release();
+    if (result.rowCount === 0) return res.status(404).json({ error: "not_found" });
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting inquiry:", error);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
 app.put("/update_project/:projectId", authenticateToken, requireStaff, async (req, res) => {
   try {
     const projectId = req.params.projectId;
@@ -1359,6 +1467,20 @@ async function ensureSchema() {
     await client.query(
       "ALTER TABLE projects ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN NOT NULL DEFAULT false"
     );
+
+    // Lead-capture: submissions from the public contact form. Stored here so a
+    // lead is never lost even if the Telegram notification fails or isn't
+    // configured; staff read them in the admin panel.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS inquiries (
+        id SERIAL PRIMARY KEY,
+        name TEXT,
+        contact TEXT,
+        message TEXT,
+        is_read BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `);
 
     // Built-in UI copy (ua/en/sk) used to ship only as static JSON files in
     // the client image, so it could never be edited from the admin panel.

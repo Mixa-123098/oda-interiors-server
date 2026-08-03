@@ -137,7 +137,18 @@
     "instagram": "Instagram",
     "viber": "Viber",
     "email": "Email",
-    "telephone": "Telephone"
+    "telephone": "Telephone",
+    "form": {
+      "title": "Request a consultation",
+      "hint": "Leave your contact and we'll get back to you shortly.",
+      "name": "Your name",
+      "contact": "Phone, email or Telegram",
+      "message": "Tell us about your project (optional)",
+      "submit": "Send",
+      "submitting": "Sending...",
+      "success": "Thank you! We'll get in touch with you soon.",
+      "error": "Something went wrong. Please try again."
+    }
   },
   "pricesPage": {
     "ourPrices": "Our Prices",
@@ -162,6 +173,16 @@
   },
   "editPage": {
     "adminPanel": "Administration Panel",
+    "inquiries": {
+      "tab": "Inquiries",
+      "title": "Contact form inquiries",
+      "empty": "No inquiries yet.",
+      "new": "new",
+      "markRead": "Mark read",
+      "markUnread": "Mark unread",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this inquiry?"
+    },
     "createNewProject": {
       "open": "Open",
       "close": "Close",

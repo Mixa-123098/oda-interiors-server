@@ -137,7 +137,18 @@
     "instagram": "Instagram",
     "viber": "Viber",
     "email": "Email",
-    "telephone": "Telefón"
+    "telephone": "Telefón",
+    "form": {
+      "title": "Požiadať o konzultáciu",
+      "hint": "Zanechajte kontakt a čoskoro sa vám ozveme.",
+      "name": "Vaše meno",
+      "contact": "Telefón, email alebo Telegram",
+      "message": "Povedzte nám o vašom projekte (nepovinné)",
+      "submit": "Odoslať",
+      "submitting": "Odosielanie...",
+      "success": "Ďakujeme! Čoskoro sa vám ozveme.",
+      "error": "Niečo sa pokazilo. Skúste to znova."
+    }
   },
   "pricesPage": {
     "ourPrices": "Naše ceny",
@@ -162,6 +173,16 @@
   },
   "editPage": {
     "adminPanel": "Administrátorský panel",
+    "inquiries": {
+      "tab": "Žiadosti",
+      "title": "Žiadosti z kontaktného formulára",
+      "empty": "Zatiaľ žiadne žiadosti.",
+      "new": "nová",
+      "markRead": "Označiť ako prečítané",
+      "markUnread": "Označiť ako neprečítané",
+      "delete": "Odstrániť",
+      "deleteConfirm": "Odstrániť túto žiadosť?"
+    },
     "createNewProject": {
       "open": "Otvoriť",
       "close": "Zavrieť",
