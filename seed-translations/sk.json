@@ -60,6 +60,14 @@
       "title": "Pripravení začať projekt?",
       "subtitle": "Povedzte nám o svojom priestore — ozveme sa a poskytneme bezplatnú konzultáciu.",
       "button": "Objednať konzultáciu"
+    },
+    "trust": {
+      "item1Value": "20+",
+      "item1Label": "rokov skúseností",
+      "item2Value": "Kyjev · Dnipro",
+      "item2Label": "mestá, kde pôsobíme",
+      "item3Value": "Celý cyklus",
+      "item3Label": "od konceptu po hotový priestor"
     }
   },
   "projectsPage": {

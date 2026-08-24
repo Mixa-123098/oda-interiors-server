@@ -60,6 +60,14 @@
       "title": "Ready to start your project?",
       "subtitle": "Tell us about your space — we'll get back to you with a free consultation.",
       "button": "Request a consultation"
+    },
+    "trust": {
+      "item1Value": "20+",
+      "item1Label": "years of experience",
+      "item2Value": "Kyiv · Dnipro",
+      "item2Label": "cities we work in",
+      "item3Value": "Full cycle",
+      "item3Label": "from concept to finished space"
     }
   },
   "projectsPage": {
