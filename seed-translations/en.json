@@ -55,6 +55,11 @@
       "mainTextPartOne": "We are ready to provide you with information about the cost of our services. Every project is important to us, and we are eager to consider your needs and questions.",
       "mainTextPartTwo": "Contact us for a personalized consultation and cost estimate. We strive to provide you with the best solutions to achieve your goals.",
       "button": "Get a Quote"
+    },
+    "cta": {
+      "title": "Ready to start your project?",
+      "subtitle": "Tell us about your space — we'll get back to you with a free consultation.",
+      "button": "Request a consultation"
     }
   },
   "projectsPage": {

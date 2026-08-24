@@ -55,6 +55,11 @@
       "mainTextPartOne": "Sme pripravení poskytnúť vám informácie o cene našich služieb. Každý projekt je pre nás dôležitý a tešíme sa na zohľadnenie vašich potrieb a otázok.",
       "mainTextPartTwo": "Kontaktujte nás pre personalizovanú konzultáciu a cenovú ponuku. Usilujeme sa poskytnúť vám najlepšie riešenia na dosiahnutie vašich cieľov.",
       "button": "Získať cenovú ponuku"
+    },
+    "cta": {
+      "title": "Pripravení začať projekt?",
+      "subtitle": "Povedzte nám o svojom priestore — ozveme sa a poskytneme bezplatnú konzultáciu.",
+      "button": "Objednať konzultáciu"
     }
   },
   "projectsPage": {
