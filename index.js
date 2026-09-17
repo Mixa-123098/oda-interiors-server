@@ -397,6 +397,92 @@ app.put(
     }
   }
 );
+// app.put(
+//   "/languages/translations/bulk-update",
+//   authenticateToken,
+//   requireAdmin,
+//   async (req, res) => {
+//     const { changes, langs } = req.body;
+//     if (
+//       !Array.isArray(changes) ||
+//       !changes.length ||
+//       !Array.isArray(langs) ||
+//       !langs.length
+//     ) {
+//       return res.status(400).json({ error: "invalid_body" });
+//     }
+
+//     const client = await pool.connect();
+//     try {
+//       try {
+//         await client.query("BEGIN");
+//         for (const { path, value } of changes) {
+//           const pathSegments = path.split(".");
+//           for (const lang of langs) {
+//             await client.query(
+//               "UPDATE languages SET ui_translations = jsonb_set(ui_translations, $1, to_jsonb($2::text), true) WHERE code = $3",
+//               [pathSegments, value, lang]
+//             );
+//           }
+//         }
+//         await client.query("COMMIT");
+//       } catch (txError) {
+//         await client.query("ROLLBACK");
+//         throw txError;
+//       }
+//       res.json({ success: true });
+//     } catch (error) {
+//       console.error("Error bulk-updating translations:", error);
+//       res.status(500).json({ error: "internal_error" });
+//     } finally {
+//       client.release();
+//     }
+//   }
+// );
+
+app.put(
+  "/languages/translations/translations_update",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
+    const { changes, langs } = req.body;
+    if (
+      !Array.isArray(changes) ||
+      !changes.length ||
+      !Array.isArray(langs) ||
+      !langs.length
+    ) {
+      return res.status(400).json({ error: "invalid_body" });
+    }
+
+    const client = await pool.connect();
+    try {
+      try {
+        await client.query("BEGIN");
+        for (const { path, value } of changes) {
+          const pathSegments = path.split(".");
+          for (const lang of langs) {
+            await client.query(
+              "UPDATE languages SET ui_translations = jsonb_set(ui_translations, $1, to_jsonb($2::text), true) WHERE code = $3",
+              [pathSegments, value, lang]
+            );
+          }
+        }
+        await client.query("COMMIT");
+      } catch (txError) {
+        await client.query("ROLLBACK");
+        throw txError;
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error saving translations:", error);
+      res.status(500).json({ error: "internal_error" });
+    } finally {
+      client.release();
+    }
+  }
+);
+
 
 app.post("/languages", authenticateToken, requireAdmin, async (req, res) => {
   const { code, name, sourceContent } = req.body;
