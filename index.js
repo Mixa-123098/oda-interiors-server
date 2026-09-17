@@ -445,26 +445,73 @@ app.put(
   authenticateToken,
   requireAdmin,
   async (req, res) => {
-    const { changes, langs } = req.body;
+    const { changes, langs, sourceLang, mode } = req.body;
     if (
       !Array.isArray(changes) ||
       !changes.length ||
       !Array.isArray(langs) ||
-      !langs.length
+      !langs.length ||
+      (mode !== "copy" && mode !== "translate")
     ) {
       return res.status(400).json({ error: "invalid_body" });
+    }
+    if (mode === "translate" && !sourceLang) {
+      return res.status(400).json({ error: "missing_source_lang" });
     }
 
     const client = await pool.connect();
     try {
+      // valuesByLang[lang] = { path: value } to write for that language. For
+      // "copy" every language gets the same literal values; for "translate"
+      // each language gets its own AI-translated values (one Anthropic call
+      // per language, done before opening the transaction below so a slow
+      // API call never holds a DB connection idle). A language whose
+      // translation fails is skipped rather than failing the whole save —
+      // same partial-success behavior as the project retranslate flow.
+      const valuesByLang = {};
+      const failedLangs = [];
+
+      if (mode === "copy") {
+        const literalValues = Object.fromEntries(
+          changes.map(({ path, value }) => [path, value])
+        );
+        for (const lang of langs) {
+          valuesByLang[lang] = literalValues;
+        }
+      } else {
+        const { rows } = await client.query(
+          "SELECT code, name FROM languages WHERE code = ANY($1)",
+          [[sourceLang, ...langs]]
+        );
+        const nameByCode = Object.fromEntries(rows.map((r) => [r.code, r.name]));
+        const sourceObject = Object.fromEntries(
+          changes.map(({ path, value }) => [path, value])
+        );
+        for (const lang of langs) {
+          const translated = await translateUiContent(
+            sourceObject,
+            nameByCode[sourceLang] || sourceLang,
+            nameByCode[lang] || lang
+          );
+          if (!translated) {
+            failedLangs.push(lang);
+            continue;
+          }
+          valuesByLang[lang] = translated;
+        }
+      }
+
+      const pathSegmentsByPath = Object.fromEntries(
+        changes.map(({ path }) => [path, path.split(".")])
+      );
+
       try {
         await client.query("BEGIN");
-        for (const { path, value } of changes) {
-          const pathSegments = path.split(".");
-          for (const lang of langs) {
+        for (const [lang, values] of Object.entries(valuesByLang)) {
+          for (const path of Object.keys(pathSegmentsByPath)) {
             await client.query(
               "UPDATE languages SET ui_translations = jsonb_set(ui_translations, $1, to_jsonb($2::text), true) WHERE code = $3",
-              [pathSegments, value, lang]
+              [pathSegmentsByPath[path], values[path], lang]
             );
           }
         }
@@ -473,7 +520,8 @@ app.put(
         await client.query("ROLLBACK");
         throw txError;
       }
-      res.json({ success: true });
+
+      res.json({ success: true, failedLangs });
     } catch (error) {
       console.error("Error saving translations:", error);
       res.status(500).json({ error: "internal_error" });
@@ -504,7 +552,7 @@ app.post("/languages", authenticateToken, requireAdmin, async (req, res) => {
       return res.status(409).json({ error: "language_exists" });
     }
 
-    const uiTranslations = await translateUiContent(sourceContent, name);
+    const uiTranslations = await translateUiContent(sourceContent, "Ukrainian", name);
     if (!uiTranslations) {
       return res.status(500).json({ error: "translation_failed" });
     }

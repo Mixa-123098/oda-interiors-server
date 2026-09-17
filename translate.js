@@ -51,9 +51,10 @@ async function translateProject(source, targetLangs) {
   }
 }
 
-// Translates every string value in a nested UI-copy JSON object into targetLangName,
-// keeping the exact same keys/structure. Returns the translated object or null on failure.
-async function translateUiContent(sourceJson, targetLangName) {
+// Translates every string value in a nested UI-copy JSON object from
+// sourceLangName into targetLangName, keeping the exact same keys/structure.
+// Returns the translated object or null on failure.
+async function translateUiContent(sourceJson, sourceLangName, targetLangName) {
   try {
     const response = await client.messages.create({
       model: "claude-opus-4-8",
@@ -62,7 +63,7 @@ async function translateUiContent(sourceJson, targetLangName) {
       messages: [
         {
           role: "user",
-          content: `Translate every string value in this JSON object (UI text for a website) from Ukrainian into natural, professional ${targetLangName}. Keep the exact same JSON structure and keys — only translate the string values. Return ONLY the resulting JSON, with no markdown code fences and no commentary.\n\n${JSON.stringify(sourceJson)}`,
+          content: `Translate every string value in this JSON object (UI text for a website) from ${sourceLangName} into natural, professional ${targetLangName}. Keep the exact same JSON structure and keys — only translate the string values. Return ONLY the resulting JSON, with no markdown code fences and no commentary.\n\n${JSON.stringify(sourceJson)}`,
         },
       ],
     });
