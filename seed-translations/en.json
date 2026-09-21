@@ -6,7 +6,8 @@
     "contactsPage": "Contact us",
     "pricesPage": "Prices",
     "editPage": "Edit",
-    "logoutButton": "Log out"
+    "logoutButton": "Log out",
+    "mapPage": "Map"
   },
   "mainPage": {
     "goToTheProject": "To the project",
@@ -64,11 +65,16 @@
     "trust": {
       "item1Value": "20+",
       "item1Label": "years of experience",
-      "item2Value": "Kyiv · Dnipro",
-      "item2Label": "cities we work in",
+      "item2Value": "Worldwide",
+      "item2Label": "projects in different countries",
       "item3Value": "Full cycle",
       "item3Label": "from concept to finished space"
-    }
+    },
+    "featured": {
+      "title": "Selected projects",
+      "all": "All projects"
+    },
+    "slide": "Slide {{num}}"
   },
   "projectsPage": {
     "ourProjects": "Our projects",
@@ -115,27 +121,27 @@
       "valuesList": [
         {
           "title": "PROFESSIONALISM",
-          "content": "We are experts in our field; We build systematic work; We build effective communication; We apply an individual approach to each client; We continuously develop professionally and learn."
+          "summary": "Systematic work and an individual approach to every client."
         },
         {
           "title": "INNOVATIONS",
-          "content": "We are open to new ideas and technologies; We are proactive; We create an atmosphere that stimulates creative search, the birth of creative ideas; We strive to offer what others cannot."
+          "summary": "Open to new ideas and technology — we look for what others don't offer."
         },
         {
           "title": "REPUTATION",
-          "content": "This is transparency, honesty, and reliability; This is clear fulfillment of contractual obligations; This is positive client feedback; This is compliance with legislation."
+          "summary": "Transparency, honesty and agreements kept to the letter."
         },
         {
           "title": "TEAM",
-          "content": "We are united by a single goal; We are focused on a common final result; We are cohesive and support each other in achieving set tasks."
+          "summary": "Architects, designers and a visualiser gathered around one result."
         },
         {
-          "title": "SAFETY",
-          "content": "This is the guarantee of preventing threats and risks for employees, partners, and the environment; This is a comprehensive approach to safety issues; This is a one hundred percent backup for all vital systems; This is high-tech engineering of the warehouse complex."
+          "title": "COMFORT",
+          "summary": "A space that is comfortable to live in every day, not just to photograph."
         },
         {
           "title": "QUALITY",
-          "content": "We perform work according to the existing quality system; We control every stage of the process and its compliance with existing quality standards; All processes comply with international standards and are regulated by written instructions; A risk analysis system is implemented."
+          "summary": "Attention to detail at every stage, from concept to completion."
         }
       ]
     },
@@ -144,8 +150,15 @@
       "button": "Contact Us"
     }
   },
+  "notFoundPage": {
+    "title": "Page not found",
+    "text": "It may have been moved, or the address was mistyped.",
+    "home": "Back to home",
+    "projects": "View projects"
+  },
   "contactsPage": {
     "contacts": "Contacts",
+    "direct": "Or reach us directly",
     "telegram": "Telegram",
     "instagram": "Instagram",
     "viber": "Viber",
@@ -230,7 +243,6 @@
       "blueprintImage": "Blueprint (Image)",
       "blueprintDescription": "Blueprint Description",
       "imagesInsideTheProject": "Images (Inside the Project)",
-
       "feedbacks": {
         "name": {
           "true": "Project name is suitable",
@@ -348,7 +360,16 @@
       "saveSuccess": "Changes saved!",
       "saveError": "Failed to save changes",
       "removeImageConfirm": "Delete this image?",
-      "clickToCrop": "Click the photo to crop it"
+      "clickToCrop": "Click the photo to crop it",
+      "location": {
+        "hint": "Map pin is set automatically from city and country. Click the map or drag the pin to correct it.",
+        "none": "No location yet",
+        "auto": "automatic",
+        "manual": "set by hand",
+        "reset": "Back to automatic",
+        "saved": "Saved",
+        "error": "Could not save location"
+      }
     },
     "cropImages": {
       "open_close": "cropping images",
@@ -369,7 +390,49 @@
       "saveError": "Failed to save the cropped photo"
     },
     "languages": {
-      "title": "Site Languages"
+      "title": "Site Languages",
+      "loading": "Loading...",
+      "code": "Code",
+      "name": "Name",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "close": "Close",
+      "editTranslations": "Edit translations",
+      "delete": "Delete",
+      "invalidCode": "Language code must be 2-3 Latin letters, e.g. \"pl\"",
+      "missingName": "Enter a language name",
+      "languageExists": "This language is already added",
+      "addFailed": "Failed to add language. Please try again.",
+      "codeExists": "A language with this code already exists",
+      "saveMetaFailed": "Failed to save changes. Please try again.",
+      "backfillWarning": "Note: {{translated}}/{{total}} projects translated. Failed to translate project(s) with ID: {{ids}} — try the \"Retranslate\" button on the project edit tab.",
+      "deleteConfirm": "Delete language \"{{code}}\" along with all its translations?",
+      "cannotDeleteLast": "Cannot delete the site's last remaining language",
+      "deleteFailed": "Failed to delete language",
+      "addNew": "Add new language",
+      "addNewHint": "All site text and every existing project will be automatically translated via AI. This may take a minute or two.",
+      "addSuccess": "Language added and translated!",
+      "namePlaceholder": "Name (e.g. Polish)",
+      "codePlaceholder": "Code (e.g. pl)",
+      "translating": "Translating...",
+      "addSubmit": "Add language",
+      "translationsEditor": {
+        "loading": "Loading...",
+        "searchPlaceholder": "Search by key or text...",
+        "save": "Save translations",
+        "saveSuccess": "Saved",
+        "saveError": "Failed to save",
+        "translateFailed": "Failed to translate: {{langs}}",
+        "changedCount": "Changed {{count}} key(s). Apply to other languages:",
+        "modeCopy": "Copy as-is",
+        "modeTranslate": "Translate via AI",
+        "selectAll": "Select all languages",
+        "deselectAll": "Deselect all languages",
+        "rowsCount": "{{filtered}} of {{total}} rows",
+        "noResults": "Nothing found"
+      }
     },
     "changePassword": {
       "open_close": "change password",
@@ -410,7 +473,8 @@
       "kyiv": "Kyiv",
       "dnipro": "Dnipro"
     },
-    "copyright": "All rights reserved"
+    "copyright": "All rights reserved",
+    "mapAll": "All projects on the map"
   },
   "authForm": {
     "auth": "Authorization",
@@ -424,7 +488,6 @@
     "dontHaveAnAccount": "Don't have an account?",
     "haveAnAccount": "Already have an account?",
     "toTheHomePage": "Go to Home Page",
-
     "feedbacks": {
       "usernameTaken": "This username is already taken. Please choose a different one",
       "emailTaken": "This email is already associated with an account. Please use a different email",
@@ -549,5 +612,20 @@
       "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
       "drawing_description": "."
     }
+  },
+  "mapPage": {
+    "title": "Project Map",
+    "subtitle": "Where our projects are built",
+    "count": "Projects on the map: {{count}}",
+    "hint": "Select a pin to see the projects in that city."
+  },
+  "scrollTop": "Back to top",
+  "gallery": {
+    "viewer": "Photo viewer",
+    "close": "Close",
+    "prev": "Previous photo",
+    "next": "Next photo",
+    "open": "Open photo {{n}} of {{total}}",
+    "openPlan": "Open the floor plan"
   }
 }

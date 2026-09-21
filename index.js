@@ -11,6 +11,8 @@ const cookieParser = require("cookie-parser");
 const { Pool } = require("pg");
 require('dotenv').config();
 const { translateProject, translateUiContent } = require("./translate");
+const { geocodeProject, backfillGeocodes } = require("./geocode");
+const { makeVariants, backfillImageVariants, SOURCE_EXT } = require("./imageVariants");
 const app = express();
 
 const PORT = process.env.PORT || 3001;
@@ -152,6 +154,56 @@ app.get("/projects", optionalAuth, async (req, res) => {
     );
     client.release();
     res.json(result.rows);
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
+
+// Public data for the project map: only published projects that have
+// coordinates, with per-language name/city/country so the client can pick the
+// UI language without a second request.
+app.get("/projects/map", async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT p.id, p.project_name AS name, p.project_city AS city,
+             p.project_country AS country, p.lat, p.lng,
+             p.project_img_src AS img, p.source_lang,
+             COALESCE((
+               SELECT json_object_agg(pt.lang, json_build_object(
+                        'name', pt.name, 'city', pt.city, 'country', pt.country))
+               FROM project_translations pt WHERE pt.project_id = p.id
+             ), '{}'::json) AS translations
+      FROM projects p
+      WHERE p.is_hidden = false AND p.lat IS NOT NULL AND p.lng IS NOT NULL
+      ORDER BY p.display_order NULLS LAST, p.id`);
+    res.json(rows);
+  } catch (error) {
+    console.error("Error executing query:", error);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
+
+// Admin fix for a wrong/imprecise auto-geocoded point. Pinning by hand stops
+// the automatic lookup from overwriting it; lat/lng null hands control back.
+app.put("/projects/:id/location", authenticateToken, requireStaff, async (req, res) => {
+  try {
+    const { lat, lng } = req.body;
+    const clear = lat === null && lng === null;
+    if (!clear && !(Number.isFinite(lat) && Number.isFinite(lng) &&
+        Math.abs(lat) <= 90 && Math.abs(lng) <= 180)) {
+      return res.status(400).json({ error: "invalid_coordinates" });
+    }
+    await pool.query(
+      "UPDATE projects SET lat = $1, lng = $2, geo_manual = $3, geo_key = NULL WHERE id = $4",
+      [lat, lng, !clear, req.params.id]
+    );
+    if (clear) await geocodeProject(pool, req.params.id);
+    const { rows } = await pool.query(
+      "SELECT lat, lng, geo_manual FROM projects WHERE id = $1",
+      [req.params.id]
+    );
+    res.json({ success: true, ...rows[0] });
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).json({ error: "internal_error" });
@@ -1090,6 +1142,8 @@ app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
     }
 
     client.release();
+    // Pin on the map; not awaited so a slow/failed lookup never delays saving.
+    geocodeProject(pool, projectId).catch((e) => console.error("geocode:", e.message));
     res.json({
       success: true,
       "project id": projectId,
@@ -1361,7 +1415,7 @@ const upload = multer({
 }).single("file");
 
 app.post("/upload", authenticateToken, requireStaff, (req, res) => {
-  upload(req, res, (err) => {
+  upload(req, res, async (err) => {
     if (err) {
       if (err.code === "LIMIT_FILE_SIZE") {
         return res.status(400).json({ error: "file_too_large" });
@@ -1375,6 +1429,16 @@ app.post("/upload", authenticateToken, requireStaff, (req, res) => {
 
     if (!req.file) {
       return res.status(400).json({ error: "no_file" });
+    }
+
+    // Small WebP copies for the public site; a failure here must not fail the
+    // upload itself (the original is still served as a fallback).
+    if (SOURCE_EXT.test(req.file.filename)) {
+      try {
+        await makeVariants(uploadDir, req.file.filename);
+      } catch (e) {
+        console.error("Image variants failed:", e.message);
+      }
     }
 
     res.json({ success: true, filename: req.file.filename });
@@ -1553,6 +1617,7 @@ app.put("/update_project/:projectId", authenticateToken, requireStaff, async (re
     }
 
     client.release();
+    geocodeProject(pool, projectId).catch((e) => console.error("geocode:", e.message));
     res.json({
       success: true,
       pp: projectId,
@@ -1648,6 +1713,16 @@ async function ensureSchema() {
       "ALTER TABLE projects ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN NOT NULL DEFAULT false"
     );
 
+    // Map pins: coordinates are looked up automatically from city/country
+    // (see geocode.js); geo_key remembers what was looked up so unchanged
+    // projects aren't re-geocoded, geo_manual marks an admin-placed point.
+    await client.query("ALTER TABLE projects ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION");
+    await client.query("ALTER TABLE projects ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION");
+    await client.query("ALTER TABLE projects ADD COLUMN IF NOT EXISTS geo_key TEXT");
+    await client.query(
+      "ALTER TABLE projects ADD COLUMN IF NOT EXISTS geo_manual BOOLEAN NOT NULL DEFAULT false"
+    );
+
     // Lead-capture: submissions from the public contact form. Stored here so a
     // lead is never lost even if the Telegram notification fails or isn't
     // configured; staff read them in the admin panel.
@@ -1661,6 +1736,74 @@ async function ensureSchema() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
+
+    // The seed merge below never overwrites a stored value, so copy that was
+    // rewritten in the seed files has to be migrated explicitly. Each entry
+    // only replaces a value still equal to the old default (an admin's own
+    // edit is left alone).
+    const COPY_MIGRATIONS = [
+      { lang: "en", path: ["mainPage", "trust", "item2Value"], from: "Kyiv · Dnipro", to: "Worldwide" },
+      { lang: "en", path: ["mainPage", "trust", "item2Label"], from: "cities we work in", to: "projects in different countries" },
+      { lang: "ua", path: ["mainPage", "trust", "item2Value"], from: "Київ · Дніпро", to: "По всьому світу" },
+      { lang: "ua", path: ["mainPage", "trust", "item2Label"], from: null, to: "проєкти в різних країнах" },
+      { lang: "sk", path: ["mainPage", "trust", "item2Value"], from: "Kyjev · Dnipro", to: "Po celom svete" },
+      { lang: "sk", path: ["mainPage", "trust", "item2Label"], from: null, to: "projekty v rôznych krajinách" },
+    ];
+    // COPY_MIGRATIONS above can only replace a scalar string. The About page's
+    // values list changed SHAPE - each entry is now a one-line `summary`
+    // instead of a `content` string of semicolon-separated bullets, and one
+    // entry was replaced outright - so the whole array has to be swapped.
+    // The replacement is read from the seed file rather than repeated here,
+    // so the copy still lives in exactly one place.
+    const JSON_MIGRATIONS = [
+      {
+        path: ["aboutPage", "block4", "valuesList"],
+        // Only while it still looks like the shipped default: once any entry
+        // has a `summary`, the migration has already run (or an admin has
+        // edited it in the panel) and we leave it alone.
+        isOld: (value) =>
+          Array.isArray(value) && value.length > 0 && value.every((v) => !v.summary),
+      },
+    ];
+
+    for (const m of COPY_MIGRATIONS) {
+      const { rows } = await client.query(
+        "SELECT ui_translations #>> $2 AS current FROM languages WHERE code = $1",
+        [m.lang, m.path]
+      );
+      if (rows.length === 0 || rows[0].current === null) continue;
+      // from === null: the old label wasn't captured here, so migrate only
+      // when it still mentions the old two-city wording.
+      const isOld =
+        m.from !== null
+          ? rows[0].current === m.from
+          : /Київ|Дніпр|Kyjev|міст|mest/i.test(rows[0].current);
+      if (!isOld) continue;
+      await client.query(
+        "UPDATE languages SET ui_translations = jsonb_set(ui_translations, $2, to_jsonb($3::text)) WHERE code = $1",
+        [m.lang, m.path, m.to]
+      );
+    }
+
+    for (const lang of ["ua", "en", "sk"]) {
+      const seedPath = path.join(__dirname, "seed-translations", `${lang}.json`);
+      if (!fs.existsSync(seedPath)) continue;
+      const seed = JSON.parse(fs.readFileSync(seedPath, "utf8"));
+      for (const m of JSON_MIGRATIONS) {
+        const replacement = m.path.reduce((a, k) => (a == null ? a : a[k]), seed);
+        if (replacement === undefined) continue;
+        const { rows } = await client.query(
+          "SELECT ui_translations #> $2 AS current FROM languages WHERE code = $1",
+          [lang, m.path]
+        );
+        if (rows.length === 0 || rows[0].current == null) continue;
+        if (!m.isOld(rows[0].current)) continue;
+        await client.query(
+          "UPDATE languages SET ui_translations = jsonb_set(ui_translations, $2, $3::jsonb) WHERE code = $1",
+          [lang, m.path, JSON.stringify(replacement)]
+        );
+      }
+    }
 
     // Built-in UI copy (ua/en/sk) used to ship only as static JSON files in
     // the client image, so it could never be edited from the admin panel.
@@ -1696,5 +1839,10 @@ ensureSchema()
   .finally(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
+      // Background: pin any project that has no coordinates yet.
+      backfillImageVariants(uploadDir).catch((e) =>
+        console.error("Image variants backfill:", e.message)
+      );
+      backfillGeocodes(pool).catch((e) => console.error("Geocode backfill:", e.message));
     });
   });

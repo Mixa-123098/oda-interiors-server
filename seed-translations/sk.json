@@ -6,7 +6,8 @@
     "contactsPage": "Kontaktujte nás",
     "pricesPage": "Ceny",
     "editPage": "Upraviť",
-    "logoutButton": "Odhlásiť sa"
+    "logoutButton": "Odhlásiť sa",
+    "mapPage": "Mapa"
   },
   "mainPage": {
     "goToTheProject": "Na projekt",
@@ -64,11 +65,16 @@
     "trust": {
       "item1Value": "20+",
       "item1Label": "rokov skúseností",
-      "item2Value": "Kyjev · Dnipro",
-      "item2Label": "mestá, kde pôsobíme",
+      "item2Value": "Po celom svete",
+      "item2Label": "projekty v rôznych krajinách",
       "item3Value": "Celý cyklus",
       "item3Label": "od konceptu po hotový priestor"
-    }
+    },
+    "featured": {
+      "title": "Vybrané projekty",
+      "all": "Všetky projekty"
+    },
+    "slide": "Snímka {{num}}"
   },
   "projectsPage": {
     "ourProjects": "Naše projekty",
@@ -115,27 +121,27 @@
       "valuesList": [
         {
           "title": "PROFESIONALIZMUS",
-          "content": "Sme odborníci vo svojom odbore; Budujeme systematickú prácu; Budujeme efektívnu komunikáciu; Používame individuálny prístup ku každému klientovi; Neustále sa profesionálne rozvíjame a učíme."
+          "summary": "Systematická práca a individuálny prístup ku každému klientovi."
         },
         {
           "title": "INOVÁCIE",
-          "content": "Sme otvorení novým myšlienkam a technológiám; Sme proaktívni; Vytvárame atmosféru, ktorá stimuluje kreatívne hľadanie, vznik kreatívnych nápadov; Snažíme sa ponúknuť to, čo iní nemôžu."
+          "summary": "Otvorení novým myšlienkam a technológiám — hľadáme to, čo iní neponúkajú."
         },
         {
           "title": "REPUTÁCIA",
-          "content": "Transparentnosť, čestnosť a spoľahlivosť; Jasné plnenie zmluvných povinností; Pozitívna spätná väzba od klientov; Dodržiavanie legislatívy."
+          "summary": "Transparentnosť, čestnosť a dôsledné plnenie dohôd."
         },
         {
           "title": "TÍM",
-          "content": "Sme zjednotení jediným cieľom; Sme zameraní na spoločný konečný výsledok; Sme súdržní a podporujeme sa navzájom pri dosahovaní stanovených úloh."
+          "summary": "Architekti, dizajnéri a vizualizátor sústredení na jeden výsledok."
         },
         {
-          "title": "BEZPEČNOSŤ",
-          "content": "Záruka prevencie hrozieb a rizík pre zamestnancov, partnerov a životné prostredie; Komplexný prístup k bezpečnostným otázkam; Stopercentná záloha pre všetky kritické systémy; Vysokotechnologické inžinierstvo skladového komplexu."
+          "title": "KOMFORT",
+          "summary": "Priestor, v ktorom sa dá pohodlne žiť každý deň, nielen ho fotografovať."
         },
         {
           "title": "KVALITA",
-          "content": "Vykonávame prácu podľa existujúceho systému kvality; Kontrolujeme každú fázu procesu a jej súlad s existujúcimi kvalitatívnymi normami; Všetky procesy sú v súlade s medzinárodnými normami a sú regulované písomnými inštrukciami; Je implementovaný systém analýzy rizík."
+          "summary": "Pozornosť k detailu v každej fáze, od konceptu po realizáciu."
         }
       ]
     },
@@ -144,8 +150,15 @@
       "button": "Kontaktujte nás"
     }
   },
+  "notFoundPage": {
+    "title": "Stránka sa nenašla",
+    "text": "Možno bola presunutá alebo je adresa zadaná nesprávne.",
+    "home": "Späť na hlavnú stránku",
+    "projects": "Zobraziť projekty"
+  },
   "contactsPage": {
     "contacts": "Kontakty",
+    "direct": "Alebo nás kontaktujte priamo",
     "telegram": "Telegram",
     "instagram": "Instagram",
     "viber": "Viber",
@@ -347,7 +360,16 @@
       "saveSuccess": "Zmeny uložené!",
       "saveError": "Nepodarilo sa uložiť zmeny",
       "removeImageConfirm": "Odstrániť tento obrázok?",
-      "clickToCrop": "Kliknutím na fotku ju orežete"
+      "clickToCrop": "Kliknutím na fotku ju orežete",
+      "location": {
+        "hint": "Bod na mape sa určuje automaticky podľa mesta a krajiny. Kliknite na mapu alebo presuňte bod, aby ste ho opravili.",
+        "none": "Zatiaľ bez polohy",
+        "auto": "automaticky",
+        "manual": "nastavené ručne",
+        "reset": "Späť na automatické",
+        "saved": "Uložené",
+        "error": "Polohu sa nepodarilo uložiť"
+      }
     },
     "cropImages": {
       "open_close": "orezávanie obrázkov",
@@ -368,7 +390,49 @@
       "saveError": "Nepodarilo sa uložiť orezanú fotku"
     },
     "languages": {
-      "title": "Jazyky stránky"
+      "title": "Jazyky stránky",
+      "loading": "Načítava sa...",
+      "code": "Kód",
+      "name": "Názov",
+      "save": "Uložiť",
+      "saving": "Ukladá sa...",
+      "cancel": "Zrušiť",
+      "edit": "Upraviť",
+      "close": "Zavrieť",
+      "editTranslations": "Upraviť preklady",
+      "delete": "Odstrániť",
+      "invalidCode": "Kód jazyka musí mať 2-3 latinské písmená, napr. \"pl\"",
+      "missingName": "Zadajte názov jazyka",
+      "languageExists": "Tento jazyk je už pridaný",
+      "addFailed": "Nepodarilo sa pridať jazyk. Skúste to znova.",
+      "codeExists": "Jazyk s týmto kódom už existuje",
+      "saveMetaFailed": "Nepodarilo sa uložiť zmeny. Skúste to znova.",
+      "backfillWarning": "Upozornenie: {{translated}}/{{total}} projektov preložených. Nepodarilo sa preložiť projekt(y) s ID: {{ids}} — skúste tlačidlo \"Preložiť\" na karte úpravy projektu.",
+      "deleteConfirm": "Odstrániť jazyk \"{{code}}\" spolu so všetkými jeho prekladmi?",
+      "cannotDeleteLast": "Nie je možné odstrániť posledný jazyk stránky",
+      "deleteFailed": "Nepodarilo sa odstrániť jazyk",
+      "addNew": "Pridať nový jazyk",
+      "addNewHint": "Všetok text stránky a všetky existujúce projekty budú automaticky preložené cez AI. Môže to trvať minútu až dve.",
+      "addSuccess": "Jazyk bol pridaný a preložený!",
+      "namePlaceholder": "Názov (napr. Polish)",
+      "codePlaceholder": "Kód (napr. pl)",
+      "translating": "Prekladá sa...",
+      "addSubmit": "Pridať jazyk",
+      "translationsEditor": {
+        "loading": "Načítava sa...",
+        "searchPlaceholder": "Hľadať podľa kľúča alebo textu...",
+        "save": "Uložiť preklady",
+        "saveSuccess": "Uložené",
+        "saveError": "Nepodarilo sa uložiť",
+        "translateFailed": "Nepodarilo sa preložiť: {{langs}}",
+        "changedCount": "Zmenených {{count}} kľúč(ov). Použiť aj pre iné jazyky:",
+        "modeCopy": "Skopírovať tak, ako je",
+        "modeTranslate": "Preložiť cez AI",
+        "selectAll": "Vybrať všetky jazyky",
+        "deselectAll": "Zrušiť výber všetkých jazykov",
+        "rowsCount": "{{filtered}} z {{total}} riadkov",
+        "noResults": "Nič sa nenašlo"
+      }
     },
     "changePassword": {
       "open_close": "zmeniť heslo",
@@ -409,7 +473,8 @@
       "kyiv": "Kyjev",
       "dnipro": "Dnipro"
     },
-    "copyright": "Všetky práva vyhradené"
+    "copyright": "Všetky práva vyhradené",
+    "mapAll": "Všetky projekty na mape"
   },
   "authForm": {
     "auth": "Autorizácia",
@@ -547,5 +612,20 @@
       "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
       "drawing_description": "."
     }
+  },
+  "mapPage": {
+    "title": "Mapa projektov",
+    "subtitle": "Kde sú naše projekty realizované",
+    "count": "Projektov na mape: {{count}}",
+    "hint": "Vyberte značku a zobrazia sa projekty v danom meste."
+  },
+  "scrollTop": "Späť nahor",
+  "gallery": {
+    "viewer": "Prehliadač fotografií",
+    "close": "Zavrieť",
+    "prev": "Predchádzajúca fotografia",
+    "next": "Ďalšia fotografia",
+    "open": "Otvoriť fotografiu {{n}} z {{total}}",
+    "openPlan": "Otvoriť pôdorys"
   }
 }
