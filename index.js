@@ -1764,6 +1764,18 @@ async function ensureSchema() {
         isOld: (value) =>
           Array.isArray(value) && value.length > 0 && value.every((v) => !v.summary),
       },
+      {
+        // The About story's lead used to be about building this website
+        // ("create our own information resource") - the most prominent text
+        // on the page said nothing about the studio. Replaced only while the
+        // shipped wording is still there, so panel edits survive.
+        path: ["aboutPage", "block1"],
+        isOld: (value) =>
+          value != null &&
+          /інформаційний ресурс|information resource|informačný zdroj/i.test(
+            value.mainTextPartOne || ""
+          ),
+      },
     ];
 
     for (const m of COPY_MIGRATIONS) {
