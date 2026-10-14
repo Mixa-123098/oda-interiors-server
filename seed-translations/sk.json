@@ -631,7 +631,8 @@
     "prev": "Predchádzajúca fotografia",
     "next": "Ďalšia fotografia",
     "open": "Otvoriť fotografiu {{n}} z {{total}}",
-    "openPlan": "Otvoriť pôdorys"
+    "openPlan": "Otvoriť pôdorys",
+    "photo": "fotografia {{n}}"
   },
   "seo": {
     "default": {

@@ -288,15 +288,28 @@ app.get("/sitemap.xml", async (req, res) => {
     );
     const siteLangs = langRows.map((r) => r.code);
     const { rows: projects } = await pool.query(`
-      SELECT p.id, p.source_lang,
+      SELECT p.id, p.source_lang, p.updated_at, p.project_header_img,
              COALESCE((SELECT array_agg(pt.lang) FROM project_translations pt
-                       WHERE pt.project_id = p.id), '{}') AS langs
+                       WHERE pt.project_id = p.id), '{}') AS langs,
+             COALESCE((SELECT array_agg(pi.img ORDER BY pi."order", pi.id)
+                       FROM projects_imges pi WHERE pi.project_id = p.id), '{}') AS photos,
+             (SELECT pb.img FROM projects_blueprints pb
+              WHERE pb.project_id = p.id ORDER BY pb.id LIMIT 1) AS plan
       FROM projects p
       WHERE p.is_hidden = false
       ORDER BY p.id`);
+    // The listing, home and map pages change whenever a project does.
+    const newestProject = projects.reduce(
+      (latest, p) => (p.updated_at > latest ? p.updated_at : latest),
+      new Date(0)
+    );
+    const imageUrl = (file) =>
+      `${base}/img/main_imges_folder/${encodeURI(file)}`.replace(/&/g, "&amp;");
 
     const entries = [];
-    const addPage = (pagePath, available, priority) => {
+    // lastmod: a Date or null; images: file names shown on the page (an image
+    // sitemap entry each - photos are what an interiors portfolio is found by).
+    const addPage = (pagePath, available, priority, lastmod = null, images = []) => {
       const versions = siteLangs.filter((code) => available.includes(code));
       const alternates =
         versions.length > 1
@@ -312,29 +325,37 @@ app.get("/sitemap.xml", async (req, res) => {
         entries.push(
           [
             "  <url>",
+            // Schema order: loc, lastmod, priority, then extension elements.
             `    <loc>${base}${localizedPath(pagePath, code)}</loc>`,
-            ...alternates,
+            ...(lastmod ? [`    <lastmod>${lastmod.toISOString()}</lastmod>`] : []),
             `    <priority>${priority}</priority>`,
+            ...alternates,
+            ...images.map(
+              (file) => `    <image:image><image:loc>${imageUrl(file)}</image:loc></image:image>`
+            ),
             "  </url>",
           ].join("\n")
         );
       }
     };
 
-    addPage("/", siteLangs, "1.0");
-    addPage("/projects", siteLangs, "0.9");
+    const listed = projects.length ? newestProject : null;
+    addPage("/", siteLangs, "1.0", listed);
+    addPage("/projects", siteLangs, "0.9", listed);
     addPage("/about", siteLangs, "0.7");
     addPage("/price", siteLangs, "0.7");
     addPage("/contacts", siteLangs, "0.7");
-    addPage("/map", siteLangs, "0.5");
+    addPage("/map", siteLangs, "0.5", listed);
     for (const p of projects) {
-      addPage(`/projects/${p.id}`, [p.source_lang, ...p.langs], "0.8");
+      const images = [p.project_header_img, ...p.photos, p.plan].filter(Boolean);
+      addPage(`/projects/${p.id}`, [p.source_lang, ...p.langs], "0.8", p.updated_at, images);
     }
 
     const xml =
       '<?xml version="1.0" encoding="UTF-8"?>\n' +
       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ' +
-      'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
+      'xmlns:xhtml="http://www.w3.org/1999/xhtml" ' +
+      'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
       entries.join("\n") +
       "\n</urlset>\n";
 
@@ -971,7 +992,11 @@ app.post("/logout", (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/me", authenticateToken, async (req, res) => {
+// Asked on every page load by every visitor: a signed-out visitor is the
+// normal case, not an error, so it gets 200 null instead of a 401 (which
+// every browser logs to the console as a failed request).
+app.get("/me", optionalAuth, async (req, res) => {
+  if (!req.user) return res.json(null);
   try {
     const client = await pool.connect();
     const result = await client.query(
@@ -1831,6 +1856,42 @@ async function ensureSchema() {
     await client.query(
       "ALTER TABLE languages ADD COLUMN IF NOT EXISTS copy_version INTEGER NOT NULL DEFAULT 0"
     );
+
+    // When a project page last changed - the sitemap's <lastmod>. Kept by the
+    // database itself, so every way of editing a project (fields, photos,
+    // their order, the floor plan, translations) counts without each route
+    // having to remember it. Map pins and the listing order don't change the
+    // page, so they don't count.
+    await client.query(
+      "ALTER TABLE projects ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()"
+    );
+    await client.query(`
+      CREATE OR REPLACE FUNCTION touch_project_updated_at() RETURNS trigger AS $$
+      BEGIN
+        NEW.updated_at := now();
+        RETURN NEW;
+      END $$ LANGUAGE plpgsql`);
+    await client.query(`
+      CREATE OR REPLACE TRIGGER projects_touch_updated_at
+        BEFORE UPDATE OF project_name, project_city, project_country,
+          project_specialization, project_img_src, project_header_img,
+          project_brief, project_finish_date, project_square, project_team,
+          is_hidden, source_lang
+        ON projects FOR EACH ROW EXECUTE FUNCTION touch_project_updated_at()`);
+    await client.query(`
+      CREATE OR REPLACE FUNCTION touch_parent_project() RETURNS trigger AS $$
+      DECLARE pid integer;
+      BEGIN
+        IF TG_OP = 'DELETE' THEN pid := OLD.project_id; ELSE pid := NEW.project_id; END IF;
+        UPDATE projects SET updated_at = now() WHERE id = pid;
+        RETURN NULL;
+      END $$ LANGUAGE plpgsql`);
+    for (const table of ["projects_imges", "projects_blueprints", "project_translations"]) {
+      await client.query(`
+        CREATE OR REPLACE TRIGGER ${table}_touch_project
+          AFTER INSERT OR UPDATE OR DELETE ON ${table}
+          FOR EACH ROW EXECUTE FUNCTION touch_parent_project()`);
+    }
 
     // Lead-capture: submissions from the public contact form. Stored here so a
     // lead is never lost even if the Telegram notification fails or isn't

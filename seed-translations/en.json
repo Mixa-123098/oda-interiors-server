@@ -631,7 +631,8 @@
     "prev": "Previous photo",
     "next": "Next photo",
     "open": "Open photo {{n}} of {{total}}",
-    "openPlan": "Open the floor plan"
+    "openPlan": "Open the floor plan",
+    "photo": "photo {{n}}"
   },
   "seo": {
     "default": {
