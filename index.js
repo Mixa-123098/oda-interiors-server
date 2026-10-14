@@ -1946,6 +1946,36 @@ async function ensureSchema() {
             value.mainTextPartOne || ""
           ),
       },
+      // SEO titles/descriptions rewritten with keywords and the "ODA
+      // Interiors" brand (the first version said just "About Us").
+      {
+        path: ["seo"],
+        isOld: (value) => ["About Us", "Про нас", "O nás"].includes(value?.about?.title),
+      },
+      // Home H1 + intro: was "Each project we develop as the most important
+      // one" and two paragraphs of generic copy repeated further down.
+      {
+        path: ["mainPage", "block1"],
+        isOld: (value) =>
+          /Each project we develop|Кожен проект ми розробляємо|Každý projekt, ktorý vyvíjame/.test(
+            value?.titlePartOne || ""
+          ),
+      },
+      // Project briefs that were a "." placeholder, plus 193's, which had
+      // been copy-pasted from another project ("a couple who love minimalism"
+      // - it is a bachelor's flat in a classic style).
+      ...["project192", "project207", "project208"].map((key) => ({
+        path: ["projects", key, "brief"],
+        isOld: (value) =>
+          typeof value === "string" &&
+          (value.trim() === "." || /^Ця орендна квартира має невелику площу/.test(value)),
+      })),
+      {
+        path: ["projects", "project193", "brief"],
+        isOld: (value) =>
+          typeof value === "string" &&
+          (value.trim() === "." || /minimalism|мінімалізм|minimalizmus/i.test(value)),
+      },
     ];
 
     for (const m of COPY_MIGRATIONS) {
@@ -2009,9 +2039,81 @@ async function ensureSchema() {
         [merged, lang]
       );
     }
+
+    // One Latin spelling per team member, in every language and project
+    // (see normalizeTeamNames). Only writes what actually changes.
+    const { rows: uiRows } = await client.query(
+      "SELECT code, ui_translations FROM languages"
+    );
+    for (const row of uiRows) {
+      const ui = row.ui_translations || {};
+      let changed = false;
+      const fix = (holder, field) => {
+        if (!isPlainObject(holder) || typeof holder[field] !== "string") return;
+        const next = normalizeTeamNames(holder[field]);
+        if (next !== holder[field]) {
+          holder[field] = next;
+          changed = true;
+        }
+      };
+      Object.values(ui.projects || {}).forEach((project) => fix(project, "team"));
+      Object.values(ui.aboutPage?.block2 || {}).forEach((person) => fix(person, "name"));
+      if (changed) {
+        await client.query("UPDATE languages SET ui_translations = $1 WHERE code = $2", [
+          ui,
+          row.code,
+        ]);
+      }
+    }
+    const { rows: teamRows } = await client.query(
+      "SELECT project_id, lang, team FROM project_translations WHERE team IS NOT NULL"
+    );
+    for (const r of teamRows) {
+      const next = normalizeTeamNames(r.team);
+      if (next !== r.team) {
+        await client.query(
+          "UPDATE project_translations SET team = $1 WHERE project_id = $2 AND lang = $3",
+          [next, r.project_id, r.lang]
+        );
+      }
+    }
+
+    // Source-language (Ukrainian) briefs that were only a "." placeholder
+    // get the text from the seed. (Translations: fillPlaceholderBriefs.)
+    const uaSeed = JSON.parse(
+      fs.readFileSync(path.join(__dirname, "seed-translations", "ua.json"), "utf8")
+    );
+    for (const [key, value] of Object.entries(uaSeed.projects || {})) {
+      const id = Number(key.replace(/^project/, ""));
+      if (!Number.isInteger(id) || !value?.brief || value.brief.trim() === ".") continue;
+      await client.query(
+        "UPDATE projects SET project_brief = $1 WHERE id = $2 AND source_lang = 'ua' AND trim(project_brief) = '.'",
+        [value.brief, id]
+      );
+    }
   } finally {
     client.release();
   }
+}
+
+// One Latin spelling per team member - the Ukrainian national
+// transliteration, as the studio chose. Machine translations had produced
+// some thirty forms ("Oľha Taranová", "Prójorova Marina", "Łeonid Starcew"),
+// so a person is recognised by the stem of their surname. Cyrillic (the
+// Ukrainian UI) is left as written.
+const TEAM_SPELLINGS = [
+  [/pr[oó](?:k?h|ch|j)[oó]r/i, "Maryna Prokhorova"],
+  [/s[iíy]tn[iy]k/i, "Kateryna Sytnyk"],
+  [/taran/i, "Olha Taran"],
+  [/star(?:ts|c)e[vw]/i, "Leonid Startsev"],
+  [/pr[iy]t[iy]sk/i, "Olena Prytysk"],
+];
+function normalizeTeamNames(text) {
+  if (/[Ѐ-ӿ]/.test(text)) return text;
+  return text
+    .split(/,\s*/)
+    .map((token) => (TEAM_SPELLINGS.find(([rx]) => rx.test(token)) || [null, token])[1])
+    .join(", ");
 }
 
 // Languages added from the admin panel (pl, es, fr...) are machine-translated
@@ -2023,14 +2125,34 @@ async function ensureSchema() {
 // language is missing, plus, once per COPY_VERSION, the rewritten blocks
 // below. Nothing else an admin has edited is touched.
 const SEED_LANGS = ["ua", "en", "sk"];
-// Bump when copy under REWRITTEN_COPY_PATHS changes again.
-const COPY_VERSION = 1;
-const REWRITTEN_COPY_PATHS = [
-  ["mainPage", "trust", "item2Value"],
-  ["mainPage", "trust", "item2Label"],
-  ["aboutPage", "block1"],
-  ["aboutPage", "block4", "valuesList"],
+// Each round of rewritten copy; a language is brought up to the latest round
+// once (languages.copy_version). Add a round with the next number when copy
+// in the seeds is rewritten again.
+const REWRITTEN_COPY = [
+  {
+    version: 1,
+    paths: [
+      ["mainPage", "trust", "item2Value"],
+      ["mainPage", "trust", "item2Label"],
+      ["aboutPage", "block1"],
+      ["aboutPage", "block4", "valuesList"],
+    ],
+  },
+  {
+    // SEO titles with the "ODA Interiors" brand, the new home H1 + intro,
+    // real briefs for projects that had "." (and 193's wrong one).
+    version: 2,
+    paths: [
+      ["seo"],
+      ["mainPage", "block1"],
+      ["projects", "project192", "brief"],
+      ["projects", "project193", "brief"],
+      ["projects", "project207", "brief"],
+      ["projects", "project208", "brief"],
+    ],
+  },
 ];
+const COPY_VERSION = Math.max(...REWRITTEN_COPY.map((r) => r.version));
 
 const isPlainObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 const getPath = (obj, keys) => keys.reduce((a, k) => (a == null ? undefined : a[k]), obj);
@@ -2103,7 +2225,10 @@ async function syncAddedLanguages() {
   for (const lang of rows) {
     const ui = lang.ui_translations || {};
     const needsCopy = lang.copy_version < COPY_VERSION;
-    const paths = [...missingPaths(ui, enSeed), ...(needsCopy ? REWRITTEN_COPY_PATHS : [])]
+    const rewritten = REWRITTEN_COPY.filter((r) => r.version > lang.copy_version).flatMap(
+      (r) => r.paths
+    );
+    const paths = [...missingPaths(ui, enSeed), ...rewritten]
       .filter((p) => getPath(enSeed, p) !== undefined)
       .filter((p, i, all) => all.findIndex((q) => q.join(".") === p.join(".")) === i);
     if (paths.length === 0) continue;
@@ -2121,7 +2246,7 @@ async function syncAddedLanguages() {
     for (const p of paths) {
       const n = applyTranslated(ui, getPath(enSeed, p), getPath(translated, p), p);
       applied += n;
-      if (n === 0 && REWRITTEN_COPY_PATHS.some((r) => r.join(".") === p.join("."))) {
+      if (n === 0 && rewritten.some((r) => r.join(".") === p.join("."))) {
         copyDone = false;
       }
     }
@@ -2132,7 +2257,32 @@ async function syncAddedLanguages() {
     changedAny = changedAny || applied > 0;
     console.log(`Language sync: ${lang.code} - ${applied} values translated (${paths.length} keys/blocks)`);
   }
+  changedAny = (await fillPlaceholderBriefs()) || changedAny;
   if (changedAny) refreshBotSnapshots();
+}
+
+// Translated project briefs that are still a "." placeholder take the text
+// the same language's UI translations already have for that project (from
+// the seeds, or just translated above), so the admin panel's project editor
+// and the page agree.
+async function fillPlaceholderBriefs() {
+  const { rows } = await pool.query(`
+    SELECT pt.project_id, pt.lang, l.ui_translations
+    FROM project_translations pt
+    JOIN languages l ON l.code = pt.lang
+    WHERE trim(pt.brief) = '.'`);
+  let filled = 0;
+  for (const r of rows) {
+    const brief = r.ui_translations?.projects?.[`project${r.project_id}`]?.brief;
+    if (typeof brief !== "string" || brief.trim() === "." || !brief.trim()) continue;
+    await pool.query(
+      "UPDATE project_translations SET brief = $1 WHERE project_id = $2 AND lang = $3",
+      [brief, r.project_id, r.lang]
+    );
+    filled++;
+  }
+  if (filled) console.log(`Placeholder briefs filled: ${filled}`);
+  return filled > 0;
 }
 
 ensureSchema()

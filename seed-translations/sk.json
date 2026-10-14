@@ -17,10 +17,10 @@
       "karaoke": "Karaoke bar v štýle steampunk"
     },
     "block1": {
-      "titlePartOne": "Každý projekt, ktorý vyvíjame",
-      "titlePartTwo": "ako najdôležitejší",
-      "mainTextPartOne": "Každý projekt, ktorý vyvíjame, je pre nás najdôležitejšou úlohou. Ku každej práci pristupujeme s veľkým nadšením a zodpovednosťou, bez ohľadu na jej rozsah alebo zložitosť. Náš prístup je založený na presvedčení, že každý projekt má potenciál zmeniť životy našich klientov a prispieť k ich úspechu.",
-      "mainTextPartTwo": "Náš cieľ nie je len splniť očakávania klientov, ale aj ich prekonať vytváraním riešení, ktoré im pomôžu dosiahnuť nové výšky v ich činnostiach. Veríme, že len takýto prístup dokáže vytvoriť skutočne zmysluplné a trvalé výsledky v oblasti vývoja projektov.",
+      "titlePartOne": "Interiérový dizajn a architektúra",
+      "titlePartTwo": "od koncepcie po hotový priestor",
+      "mainTextPartOne": "ODA Interiors navrhuje byty, rodinné domy a verejné priestory — reštaurácie, bary a kancelárie. Už viac ako dvadsať rokov naši interiéroví dizajnéri a architekti vedú projekty od prvého zamerania až po hotový interiér.",
+      "mainTextPartTwo": "Pracujeme na Ukrajine aj v zahraničí: dizajnový projekt s pôdorysmi, 3D vizualizáciami a výkresovou dokumentáciou a potom autorský dozor na stavbe, aby postavené zodpovedalo navrhnutému.",
       "button": "Zistiť viac"
     },
     "block2": {
@@ -95,7 +95,7 @@
     "block2": {
       "title": "Náš tím",
       "Marina": {
-        "name": "Marina Prokhorova",
+        "name": "Maryna Prokhorova",
         "jobTitle": "Interiérová dizajnérka, architektka"
       },
       "Olha": {
@@ -195,7 +195,57 @@
       "price": "Cena: 250$/mesiac"
     },
     "button": "Kontaktujte nás",
-    "additionalInfo": "*Cena za projekty s veľkými plochami je dohodnutá individuálne"
+    "additionalInfo": "*Cena za projekty s veľkými plochami je dohodnutá individuálne",
+    "includes": {
+      "title": "Čo zahŕňa dizajnový projekt",
+      "items": [
+        {
+          "title": "Zameranie a zadanie",
+          "text": "Prídeme na miesto, zameriame priestor a prejdeme si, ako žijete a čo potrebujete."
+        },
+        {
+          "title": "Dispozičné riešenie",
+          "text": "Varianty dispozície s rozmiestnením nábytku; vybraný variant spoločne doladíme."
+        },
+        {
+          "title": "Koncepcia a 3D vizualizácie",
+          "text": "Podoba každej miestnosti: materiály, farby, osvetlenie a nábytok."
+        },
+        {
+          "title": "Výkresová dokumentácia",
+          "text": "Kompletná sada pre stavbárov: steny, elektrina a osvetlenie, vodoinštalácia, stropy, podlahy, kladačské plány obkladov a stolárske prvky."
+        },
+        {
+          "title": "Špecifikácia",
+          "text": "Materiály, povrchové úpravy, nábytok, svietidlá a sanita s množstvami a s tým, kde ich kúpiť."
+        }
+      ]
+    },
+    "supervision": {
+      "title": "Autorský dozor",
+      "text": "Návštevy stavby, odpovede na otázky stavbárov a kontrola, či práce zodpovedajú projektu."
+    },
+    "timeline": {
+      "title": "Termíny",
+      "text": "Byt do 100 m² zvyčajne trvá 6–10 týždňov od zamerania po kompletnú výkresovú dokumentáciu."
+    },
+    "faq": {
+      "title": "Otázky",
+      "items": [
+        {
+          "q": "Je prvá konzultácia zadarmo?",
+          "a": "Áno — povedzte nám o svojom priestore a ozveme sa vám."
+        },
+        {
+          "q": "Pracujete aj mimo Ukrajiny?",
+          "a": "Áno, pracujeme s klientmi po celom svete; stretnutia a schvaľovanie môžu prebiehať online."
+        },
+        {
+          "q": "A čo priestory nad 100 m² alebo verejné interiéry?",
+          "a": "Cenu stanovujeme individuálne — pošlite nám rozlohu a zadanie."
+        }
+      ]
+    }
   },
   "editPage": {
     "adminPanel": "Administrátorský panel",
@@ -524,7 +574,7 @@
       "brief": "Apartmán pre manželský pár, ktorý miluje minimalizmus a oceňuje všetky najnovšie inovácie v interiérovom dizajne. Celková plocha apartmánu je 108 m² a jeho dizajn sa vyznačuje sofistikovanosťou a pozornosťou k detailom, ktoré sú investované do každého rohu a prvku.",
       "end_date": "implementácia plánovaná na rok 2024",
       "area": "108 m²",
-      "team": "Marina Prokhorova, Kateryna Sytnyk",
+      "team": "Maryna Prokhorova, Kateryna Sytnyk",
       "drawing_description": "Apartmán sa nachádza v viacposchodovej budove v centre mesta. Minimalistický štýl harmonizuje s mestskými výhľadmi. Dispozícia kladie dôraz na život v srdci Dnipra. Priestranná obývacia izba v open space štýle obsahuje všetko potrebné na prijímanie hostí a pohodlný život pre dvoch. Pomerne priestranná spálňa je kombinovaná s šatníkom, dvoma kúpeľňami a technickou miestnosťou — všetko potrebné pre pohodlný život ako pár. A ak príde návšteva, vždy je k dispozícii malá, ale funkčná izba pre hostí."
     },
     "project8": {
@@ -534,7 +584,7 @@
       "brief": "Karaoke bar v steampunkovom štýle, ktorý sa nachádza v centre mesta a má dve miestnosti: miestnosť s vodnou fajkou a diskotékovú miestnosť a karaoke miestnosť. Každý prvok tohto projektu stelesňuje všetky kreatívne nápady nášho tímu, pričom každý roh je exkluzívnym vývojom. Na tomto mieste ožívajú veci, pretože každý detail má dynamiku a schopnosť meniť farbu.",
       "end_date": "2021",
       "area": "okolo 250 m²",
-      "team": "Marina Prokhorova, Olena Prytysk, Kateryna Sytnyk, Leonid Startsev",
+      "team": "Maryna Prokhorova, Olena Prytysk, Kateryna Sytnyk, Leonid Startsev",
       "drawing_description": "Plocha baru je rozdelená na 2 zóny. Zóna vodnej fajky obsahuje veľký barový pult, 3 súkromné kabínky a priestor pre diskotékové a lounge párty. K dispozícii je aj karaoke zóna. Kuchynské a technické priestory sú úplne oddelené od priestoru pre hostí. Centrálnym prvkom haly je exkluzívny luster navrhnutý na objednávku."
     },
     "project190": {
@@ -544,7 +594,7 @@
       "brief": "Dvojpodlažný townhouse v lesnatej oblasti neďaleko Kyjeva s veľmi zaujímavou kombináciou štýlov. V tomto projekte sa loftový štýl spája s provensálskym. Toto bolo želanie klienta a výsledkom je tento fascinujúci dizajn.",
       "end_date": "V priebehu realizácie",
       "area": "150 m²",
-      "team": "Marina Prokhorova, Ekaterina Sytnyk, Olga Taran",
+      "team": "Maryna Prokhorova, Kateryna Sytnyk, Olha Taran",
       "drawing_description": "Dispozícia je jasne rozdelená do dvoch zón na rôznych podlažiach. Prvé poschodie je určené pre voľný čas a prijímanie hostí v loftovom štýle, zatiaľ čo druhé poschodie je viac súkromné a útulné, s spálňou v provensálskom štýle a detskými izbami."
     },
     "project191": {
@@ -554,17 +604,17 @@
       "brief": "Apartmán pre mladý pár, nachádzajúci sa v lesnatej oblasti centrálneho Kyjeva. Obývacia izba je spojená s kuchyňou, so samostatnou spálňou a detskou izbou.",
       "end_date": "2022",
       "area": "62 m²",
-      "team": "Marina Prokhorova, Olga Taran",
+      "team": "Maryna Prokhorova, Olha Taran",
       "drawing_description": "Apartmán pre mladý pár sa nachádza v lesnej zóne centrálneho Kyjeva, s kombinovanou obývacou izbou a kuchyňou, so samostatnou spálňou a detskou izbou."
     },
     "project192": {
       "name": "Rezidenčný komplex Brama",
       "city": "Dnipro",
       "country": "Ukrajina",
-      "brief": ".",
+      "brief": "Byt s rozlohou 48 m² na prenájom v obytnom komplexe Brama v Dnipre. Úlohou bolo, aby malý priestor naplno fungoval: dve skrine v predsieni, šatník v spálni a v kuchyni oddelená obývacia zóna, ktorá môže slúžiť aj ako ďalšie miesto na spanie.",
       "end_date": "2022",
       "area": "48 m²",
-      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "team": "Maryna Prokhorova, Kateryna Sytnyk, Leonid Startsev",
       "drawing_description": "Tento prenajímaný priestor má malú plochu, ale obsahuje množstvo riešení pre úložný priestor, ako napríklad dve skrine v predsieni a šatník v spálni. Kuchyňa má samostatný priestor pre obývaciu izbu, ktorá môže slúžiť aj ako spací priestor."
     },
     "project193": {
@@ -572,9 +622,9 @@
       "city": "Dnipro",
       "country": "Ukrajina",
       "area": "48 m²",
-      "brief": "Apartmán pre pár, ktorý miluje minimalizmus a oceňuje najnovšie trendy v interiérovom dizajne. Celková plocha apartmánu je 48 m² a jeho dizajn vyniká sofistikovanosťou a pozornosťou k detailom.",
+      "brief": "Útulný mládenecký byt v historickom centre Dnipra v klasickom štýle. Každá zóna je oddelená: veľká obývačka s krbom, kuchyňa s balkónom a výhľadom na mesto a pokojná priestranná spálňa — pocit starej Európy na 48 m².",
       "end_date": "2022",
-      "team": "Ekaterina Sytnyk, Marina Prokhorova",
+      "team": "Kateryna Sytnyk, Maryna Prokhorova",
       "drawing_description": "Útulný garsónkový apartmán. Historický klasický štýl určuje dispozíciu. Všetky zóny sú oddelené. Veľká obývacia izba obsahuje krb a kuchyňa má balkón s úžasným výhľadom na mesto. Spálňa je útulná a priestranná. Celková atmosféra vyvoláva pocit života v historickej Európe."
     },
     "project198": {
@@ -584,7 +634,7 @@
       "brief": "Útulný apartmán pre rodinu s tromi členmi. Majitelia preferujú svetlé odtiene a prírodné materiály, čo vedie k minimalistickému interiéru s prvkami vycibreného klasického štýlu.",
       "end_date": "2020",
       "area": "60 m²",
-      "team": "Marina Prokhorova, Olena Pritisk, Ekaterina Sytnyk, Leonid Starcev",
+      "team": "Maryna Prokhorova, Olena Prytysk, Kateryna Sytnyk, Leonid Startsev",
       "drawing_description": "Veľká obývacia izba spojená s kuchyňou a jedálenskou časťou pre teplé rodinné večery. Spálňa pre dospelých má veľké okná a je dobre osvetlená cez deň, s útulným osvetlením na večer. Detská izba je malá, ale pôsobí útulne a priestranne vďaka rozumnému usporiadaniu nábytku. Apartmán tiež obsahuje kúpeľňu a hosťovské WC."
     },
     "project200": {
@@ -594,27 +644,27 @@
       "brief": "Súkromný dom situovaný na svahoch rieky Dnipro, naplnený duchom tejto mocnej rieky vďaka výhľadom z okien. Štýl domu odráža životný štýl páru a ich dvoch detí. Všetky priestory by mali byť dobre osvetlené a kompozované, s miestami na natáčanie v každom rohu, keďže majiteľ je známy bloger.",
       "end_date": "2023",
       "area": "150 m²",
-      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "team": "Maryna Prokhorova, Kateryna Sytnyk, Leonid Startsev",
       "drawing_description": "Prvé a druhé poschodie sú jasne rozdelené do zón. Prvé poschodie zahŕňa obývaciu izbu, kuchyňu a priestor na prijímanie hostí, zatiaľ čo druhé poschodie je súkromné, s izbami pre každého člena rodiny. Dom obsahuje dve kúpeľne a schodisko, ktoré je kompozičným prvkom domu."
     },
     "project207": {
       "name": "Smart Apartmán 1",
       "city": "Kyjev",
       "country": "Ukrajina",
-      "brief": ".",
+      "brief": "Kompaktný smart byt s rozlohou 32 m² v Kyjeve, navrhnutý štúdiom ODA Interiors v roku 2022.",
       "end_date": "2022",
       "area": "32 m²",
-      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "team": "Maryna Prokhorova, Kateryna Sytnyk, Leonid Startsev",
       "drawing_description": "."
     },
     "project208": {
       "name": "Smart Apartmán 2",
       "city": "Kyjev",
       "country": "Ukrajina",
-      "brief": ".",
+      "brief": "Ďalší kompaktný smart byt, 31 m², v Kyjeve — projekt ODA Interiors z roku 2022.",
       "end_date": "2022",
       "area": "31 m²",
-      "team": "Marina Prokhorova, Ekaterina Sytnyk, Leonid Starcev",
+      "team": "Maryna Prokhorova, Kateryna Sytnyk, Leonid Startsev",
       "drawing_description": "."
     }
   },
@@ -636,27 +686,31 @@
   },
   "seo": {
     "default": {
-      "title": "ODA — štúdio interiérového dizajnu a architektúry, Ukrajina a celý svet",
-      "description": "ODA je štúdio interiérového dizajnu a architektúry z Ukrajiny, ktoré pracuje po celom svete. Navrhujeme byty, rodinné domy a verejné interiéry – od koncepcie po hotový priestor."
+      "title": "ODA Interiors — štúdio interiérového dizajnu a architektúry",
+      "description": "Interiérový dizajn a architektúra bytov, domov a verejných priestorov — od koncepcie po hotový interiér. Sídlime na Ukrajine, pracujeme po celom svete."
     },
     "about": {
-      "title": "O nás",
-      "description": "Spoznajte tím ODA – architektov a interiérových dizajnérov z Ukrajiny, ktorí pracujú po celom svete, s viac ako 20 rokmi spoločných skúseností."
+      "title": "O štúdiu: interiéroví dizajnéri a architekti",
+      "description": "Spoznajte ODA Interiors: interiéroví dizajnéri a architekti s viac ako 20 rokmi skúseností — Maryna Prokhorova, Olha Taran, Kateryna Sytnyk a Leonid Startsev."
     },
     "projects": {
-      "title": "Naše projekty",
-      "description": "Portfólio ODA: interiérový dizajn bytov, rodinných domov a verejných priestorov po celom svete."
+      "title": "Portfólio interiérového dizajnu: bývanie a verejné priestory",
+      "description": "Byty, rodinné domy, reštaurácie a bary od ODA Interiors v Kyjeve, Dnipre a ďalších mestách — fotografie, pôdorysy a detaily projektov."
     },
     "price": {
-      "title": "Cenník",
-      "description": "Ceny služieb interiérového dizajnu a architektúry od ODA – štúdia z Ukrajiny, ktoré pracuje po celom svete."
+      "title": "Ceny interiérového dizajnu za m²",
+      "description": "Dizajnový projekt interiéru od 35 $ za m², autorský dozor 400 $ mesačne. Čo zahŕňa, etapy a termíny. Prvá konzultácia je zadarmo."
     },
     "contacts": {
-      "title": "Kontakty",
-      "description": "Kontaktujte ODA – štúdio interiérového dizajnu a architektúry z Ukrajiny, ktoré pracuje po celom svete."
+      "title": "Kontakty a bezplatná konzultácia",
+      "description": "Požiadajte ODA Interiors o bezplatnú konzultáciu telefonicky, e-mailom, cez Telegram, Viber alebo WhatsApp. Pracujeme po celom svete."
     },
     "map": {
-      "description": "Mapa realizovaných projektov interiérového dizajnu a architektúry od ODA."
+      "description": "Kde sú naše projekty: byty, domy a verejné interiéry ODA Interiors na mape."
+    },
+    "project": {
+      "title": "{{name}} — interiérový dizajn od ODA Interiors",
+      "titleWithCity": "{{name}}, {{city}} — interiérový dizajn od ODA Interiors"
     }
   }
 }
