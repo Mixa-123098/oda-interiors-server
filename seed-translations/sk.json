@@ -432,7 +432,12 @@
         "deselectAll": "Zrušiť výber všetkých jazykov",
         "rowsCount": "{{filtered}} z {{total}} riadkov",
         "noResults": "Nič sa nenašlo"
-      }
+      },
+      "address": "Adresa na webe",
+      "addressHint": "Každý jazyk má na webe vlastné adresy, ktoré vyhľadávače indexujú samostatne: angličtina je v koreni, ostatné pod svojím kódom (ukrajinčina pod /uk/).",
+      "codeChangeWarning": "Zmena kódu zmení adresy tohto jazyka na webe – odkazy na staré adresy prestanú fungovať.",
+      "reservedCode": "Tento kód nemožno použiť: zhoduje sa s existujúcou adresou na webe.",
+      "defaultLocked": "Angličtina je hlavný jazyk webu: nemožno ju odstrániť ani zmeniť jej kód."
     },
     "changePassword": {
       "open_close": "zmeniť heslo",
@@ -627,5 +632,30 @@
     "next": "Ďalšia fotografia",
     "open": "Otvoriť fotografiu {{n}} z {{total}}",
     "openPlan": "Otvoriť pôdorys"
+  },
+  "seo": {
+    "default": {
+      "title": "ODA — štúdio interiérového dizajnu a architektúry, Ukrajina a celý svet",
+      "description": "ODA je štúdio interiérového dizajnu a architektúry z Ukrajiny, ktoré pracuje po celom svete. Navrhujeme byty, rodinné domy a verejné interiéry – od koncepcie po hotový priestor."
+    },
+    "about": {
+      "title": "O nás",
+      "description": "Spoznajte tím ODA – architektov a interiérových dizajnérov z Ukrajiny, ktorí pracujú po celom svete, s viac ako 20 rokmi spoločných skúseností."
+    },
+    "projects": {
+      "title": "Naše projekty",
+      "description": "Portfólio ODA: interiérový dizajn bytov, rodinných domov a verejných priestorov po celom svete."
+    },
+    "price": {
+      "title": "Cenník",
+      "description": "Ceny služieb interiérového dizajnu a architektúry od ODA – štúdia z Ukrajiny, ktoré pracuje po celom svete."
+    },
+    "contacts": {
+      "title": "Kontakty",
+      "description": "Kontaktujte ODA – štúdio interiérového dizajnu a architektúry z Ukrajiny, ktoré pracuje po celom svete."
+    },
+    "map": {
+      "description": "Mapa realizovaných projektov interiérového dizajnu a architektúry od ODA."
+    }
   }
 }

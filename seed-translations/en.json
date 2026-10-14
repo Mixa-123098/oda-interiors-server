@@ -432,7 +432,12 @@
         "deselectAll": "Deselect all languages",
         "rowsCount": "{{filtered}} of {{total}} rows",
         "noResults": "Nothing found"
-      }
+      },
+      "address": "Site address",
+      "addressHint": "Each language has its own addresses on the site, which search engines index separately: English at the root, the others under their code (Ukrainian under /uk/).",
+      "codeChangeWarning": "Changing the code changes this language's addresses on the site; links to the old ones will stop working.",
+      "reservedCode": "This code can't be used: it would clash with an existing address on the site.",
+      "defaultLocked": "English is the site's main language: it can't be deleted and its code can't be changed."
     },
     "changePassword": {
       "open_close": "change password",
@@ -627,5 +632,30 @@
     "next": "Next photo",
     "open": "Open photo {{n}} of {{total}}",
     "openPlan": "Open the floor plan"
+  },
+  "seo": {
+    "default": {
+      "title": "ODA — Interior Design & Architecture Studio, Ukraine and Worldwide",
+      "description": "ODA is an interior design and architecture studio based in Ukraine and working worldwide. We design apartments, private houses, and public interiors, from concept to finished space."
+    },
+    "about": {
+      "title": "About Us",
+      "description": "Meet the ODA team — architects and interior designers based in Ukraine and working worldwide, with over 20 years of combined experience."
+    },
+    "projects": {
+      "title": "Our Projects",
+      "description": "Browse ODA's portfolio of apartment, private house, and public interior design projects around the world."
+    },
+    "price": {
+      "title": "Prices",
+      "description": "Pricing for interior design and architecture services from ODA, a studio based in Ukraine and working worldwide."
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "Get in touch with ODA, an interior design and architecture studio based in Ukraine and working worldwide."
+    },
+    "map": {
+      "description": "Map of completed interior design and architecture projects by ODA."
+    }
   }
 }

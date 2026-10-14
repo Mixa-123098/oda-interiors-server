@@ -112,6 +112,49 @@ function isStaffUser(req) {
   return req.user?.role === "admin" || req.user?.role === "moderator";
 }
 
+// Site addresses per language - must match client/src/lib/lang.js. English,
+// the default, is unprefixed (/about); every other language lives under its
+// code (/pl/about), except Ukrainian: the DB says "ua" (the country code),
+// the URL and hreflang say "uk" (the language).
+const DEFAULT_LANG = "en";
+const toUrlCode = (code) => (code === "ua" ? "uk" : code);
+const localizedPath = (pagePath, code) =>
+  code === DEFAULT_LANG
+    ? pagePath
+    : `/${toUrlCode(code)}${pagePath === "/" ? "" : pagePath}`;
+// Top-level paths short enough to be mistaken for a language prefix.
+const RESERVED_URL_SEGMENTS = new Set(["map", "api", "img"]);
+
+// A language code can't be used if its address prefix would be a real path
+// of the site, or the same prefix as another language's ("uk" next to "ua").
+async function languageCodeClashes(client, code, ownCode = null) {
+  if (RESERVED_URL_SEGMENTS.has(code) || RESERVED_URL_SEGMENTS.has(toUrlCode(code))) {
+    return true;
+  }
+  const { rows } = await client.query("SELECT code FROM languages");
+  return rows.some(
+    (r) => r.code !== ownCode && r.code !== code && toUrlCode(r.code) === toUrlCode(code)
+  );
+}
+
+// The prerender service (prerender/server.js) keeps bot snapshots for hours;
+// after a content edit in the admin panel it is told to re-render them, so
+// search engines get the change right away. Debounced: an editing session
+// is many requests. Unset PRERENDER_URL (local dev) = no-op.
+let snapshotRefreshTimer = null;
+function refreshBotSnapshots() {
+  if (!process.env.PRERENDER_URL) return;
+  clearTimeout(snapshotRefreshTimer);
+  snapshotRefreshTimer = setTimeout(() => {
+    fetch(`${process.env.PRERENDER_URL}/__refresh`, {
+      method: "POST",
+      signal: AbortSignal.timeout(5000),
+    }).catch((error) =>
+      console.error("Prerender refresh request failed:", error.message)
+    );
+  }, 20000);
+}
+
 // Sends a Telegram message when TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID are set,
 // otherwise a silent no-op — so the contact form works (storing to the DB)
 // with or without Telegram configured. Never throws: a notification failure
@@ -144,14 +187,33 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 
+// Any successful write from the admin panel (projects, photos, order,
+// visibility, translations, languages) changes what bots should see.
+// Visitor-side writes don't.
+const VISITOR_WRITES = new Set(["/inquiries", "/login", "/logout"]);
+app.use((req, res, next) => {
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method) || VISITOR_WRITES.has(req.path)) {
+    return next();
+  }
+  res.on("finish", () => {
+    if (res.statusCode < 400) refreshBotSnapshots();
+  });
+  next();
+});
+
 app.get("/projects", optionalAuth, async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query(
-      isStaffUser(req)
-        ? "SELECT * FROM projects ORDER BY display_order NULLS LAST, id"
-        : "SELECT * FROM projects WHERE is_hidden = false ORDER BY display_order NULLS LAST, id"
-    );
+    // translated_langs: the languages a project has a translation in (besides
+    // its own source_lang) - the client builds hreflang links from it.
+    const result = await client.query(`
+      SELECT p.*,
+             COALESCE((SELECT array_agg(pt.lang ORDER BY pt.lang)
+                       FROM project_translations pt WHERE pt.project_id = p.id),
+                      '{}') AS translated_langs
+      FROM projects p
+      ${isStaffUser(req) ? "" : "WHERE p.is_hidden = false"}
+      ORDER BY p.display_order NULLS LAST, p.id`);
     client.release();
     res.json(result.rows);
   } catch (error) {
@@ -210,42 +272,70 @@ app.put("/projects/:id/location", authenticateToken, requireStaff, async (req, r
   }
 });
 
-// Dynamic sitemap: the static pages plus one URL per published (non-hidden)
-// project, so search engines can discover every project page. Served at the
-// site root via an nginx proxy (see nginx.conf).
+// Dynamic sitemap: every page of the site in every language it exists in -
+// the static pages in all of them, each published (non-hidden) project in
+// its source language plus each translation - with hreflang links between
+// the versions, so search engines index each language at its own address.
+// Served at the site root via an nginx proxy (see nginx.conf).
 app.get("/sitemap.xml", async (req, res) => {
   const base = (process.env.CLIENT_URL || "https://oda-interiors.com").replace(
     /\/$/,
     ""
   );
   try {
-    const client = await pool.connect();
-    const { rows } = await client.query(
-      "SELECT id FROM projects WHERE is_hidden = false ORDER BY id"
+    const { rows: langRows } = await pool.query(
+      "SELECT code FROM languages ORDER BY code"
     );
-    client.release();
+    const siteLangs = langRows.map((r) => r.code);
+    const { rows: projects } = await pool.query(`
+      SELECT p.id, p.source_lang,
+             COALESCE((SELECT array_agg(pt.lang) FROM project_translations pt
+                       WHERE pt.project_id = p.id), '{}') AS langs
+      FROM projects p
+      WHERE p.is_hidden = false
+      ORDER BY p.id`);
 
-    const staticUrls = [
-      { loc: `${base}/`, priority: "1.0" },
-      { loc: `${base}/projects`, priority: "0.9" },
-      { loc: `${base}/about`, priority: "0.7" },
-      { loc: `${base}/price`, priority: "0.7" },
-      { loc: `${base}/contacts`, priority: "0.7" },
-    ];
-    const projectUrls = rows.map((r) => ({
-      loc: `${base}/projects/${r.id}`,
-      priority: "0.8",
-    }));
+    const entries = [];
+    const addPage = (pagePath, available, priority) => {
+      const versions = siteLangs.filter((code) => available.includes(code));
+      const alternates =
+        versions.length > 1
+          ? [
+              ...versions.map((code) => [toUrlCode(code), code]),
+              ...(versions.includes(DEFAULT_LANG) ? [["x-default", DEFAULT_LANG]] : []),
+            ].map(
+              ([hreflang, code]) =>
+                `    <xhtml:link rel="alternate" hreflang="${hreflang}" href="${base}${localizedPath(pagePath, code)}"/>`
+            )
+          : [];
+      for (const code of versions) {
+        entries.push(
+          [
+            "  <url>",
+            `    <loc>${base}${localizedPath(pagePath, code)}</loc>`,
+            ...alternates,
+            `    <priority>${priority}</priority>`,
+            "  </url>",
+          ].join("\n")
+        );
+      }
+    };
+
+    addPage("/", siteLangs, "1.0");
+    addPage("/projects", siteLangs, "0.9");
+    addPage("/about", siteLangs, "0.7");
+    addPage("/price", siteLangs, "0.7");
+    addPage("/contacts", siteLangs, "0.7");
+    addPage("/map", siteLangs, "0.5");
+    for (const p of projects) {
+      addPage(`/projects/${p.id}`, [p.source_lang, ...p.langs], "0.8");
+    }
 
     const xml =
       '<?xml version="1.0" encoding="UTF-8"?>\n' +
-      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-      [...staticUrls, ...projectUrls]
-        .map(
-          (u) =>
-            `  <url><loc>${u.loc}</loc><priority>${u.priority}</priority></url>`
-        )
-        .join("\n") +
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ' +
+      'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
+      entries.join("\n") +
       "\n</urlset>\n";
 
     res.set("Content-Type", "application/xml");
@@ -603,6 +693,9 @@ app.post("/languages", authenticateToken, requireAdmin, async (req, res) => {
     if (existing.rows.length > 0) {
       return res.status(409).json({ error: "language_exists" });
     }
+    if (await languageCodeClashes(client, code)) {
+      return res.status(409).json({ error: "code_reserved" });
+    }
 
     const uiTranslations = await translateUiContent(sourceContent, "Ukrainian", name);
     if (!uiTranslations) {
@@ -697,12 +790,19 @@ app.put("/languages/:code", authenticateToken, requireAdmin, async (req, res) =>
     }
 
     if (newCode !== oldCode) {
+      // English is the unprefixed default of every site address.
+      if (oldCode === DEFAULT_LANG) {
+        return res.status(400).json({ error: "cannot_change_default" });
+      }
       const conflict = await client.query(
         "SELECT code FROM languages WHERE code = $1",
         [newCode]
       );
       if (conflict.rows.length > 0) {
         return res.status(409).json({ error: "language_exists" });
+      }
+      if (await languageCodeClashes(client, newCode, oldCode)) {
+        return res.status(409).json({ error: "code_reserved" });
       }
     }
 
@@ -751,6 +851,9 @@ app.delete("/languages/:code", authenticateToken, requireAdmin, async (req, res)
     );
     if (existing.rows.length === 0) {
       return res.status(404).json({ error: "not_found" });
+    }
+    if (code === DEFAULT_LANG) {
+      return res.status(400).json({ error: "cannot_delete_default" });
     }
 
     const { rows: countRows } = await client.query(
@@ -1723,6 +1826,12 @@ async function ensureSchema() {
       "ALTER TABLE projects ADD COLUMN IF NOT EXISTS geo_manual BOOLEAN NOT NULL DEFAULT false"
     );
 
+    // Which round of rewritten copy an admin-added language has been brought
+    // up to (see syncAddedLanguages).
+    await client.query(
+      "ALTER TABLE languages ADD COLUMN IF NOT EXISTS copy_version INTEGER NOT NULL DEFAULT 0"
+    );
+
     // Lead-capture: submissions from the public contact form. Stored here so a
     // lead is never lost even if the Telegram notification fails or isn't
     // configured; staff read them in the admin panel.
@@ -1844,6 +1953,127 @@ async function ensureSchema() {
   }
 }
 
+// Languages added from the admin panel (pl, es, fr...) are machine-translated
+// once, at the moment they are added, and have no seed file. So UI keys added
+// to the site later never reached them (their pages switched to English
+// mid-text), and copy rewritten later by COPY_/JSON_MIGRATIONS - which only
+// cover ua/en/sk - stayed in its old version ("Kyiv · Dnipro", the old values
+// list). On boot this translates from the English seed every key such a
+// language is missing, plus, once per COPY_VERSION, the rewritten blocks
+// below. Nothing else an admin has edited is touched.
+const SEED_LANGS = ["ua", "en", "sk"];
+// Bump when copy under REWRITTEN_COPY_PATHS changes again.
+const COPY_VERSION = 1;
+const REWRITTEN_COPY_PATHS = [
+  ["mainPage", "trust", "item2Value"],
+  ["mainPage", "trust", "item2Label"],
+  ["aboutPage", "block1"],
+  ["aboutPage", "block4", "valuesList"],
+];
+
+const isPlainObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+const getPath = (obj, keys) => keys.reduce((a, k) => (a == null ? undefined : a[k]), obj);
+function setPath(obj, keys, value) {
+  let node = obj;
+  for (const k of keys.slice(0, -1)) {
+    if (!isPlainObject(node[k])) node[k] = {};
+    node = node[k];
+  }
+  node[keys[keys.length - 1]] = value;
+}
+
+// Paths of the keys in `source` that `target` lacks (a missing subtree is one path).
+function missingPaths(target, source, prefix = []) {
+  const out = [];
+  for (const [k, v] of Object.entries(source)) {
+    const keyPath = [...prefix, k];
+    if (!(k in target)) out.push(keyPath);
+    else if (isPlainObject(v) && isPlainObject(target[k])) {
+      out.push(...missingPaths(target[k], v, keyPath));
+    }
+  }
+  return out;
+}
+
+// A translated value is used only if it has the source's shape and keeps its
+// {{placeholders}} - otherwise that key stays English (i18n fallback).
+const placeholdersOf = (s) =>
+  (s.match(/{{\s*\w+\s*}}/g) || []).map((x) => x.replace(/\s/g, "")).sort().join();
+function translationFits(src, tr) {
+  if (typeof src === "string") {
+    return (
+      typeof tr === "string" &&
+      (src.trim() === "" || tr.trim() !== "") &&
+      placeholdersOf(src) === placeholdersOf(tr)
+    );
+  }
+  if (Array.isArray(src)) {
+    return Array.isArray(tr) && tr.length === src.length && src.every((s, i) => translationFits(s, tr[i]));
+  }
+  if (isPlainObject(src)) {
+    return isPlainObject(tr) && Object.keys(src).every((k) => translationFits(src[k], tr[k]));
+  }
+  return typeof tr === typeof src;
+}
+
+// Writes every fitting leaf of `tr` into `target` at keyPath; returns how many.
+function applyTranslated(target, src, tr, keyPath) {
+  if (isPlainObject(src)) {
+    if (!isPlainObject(tr)) return 0;
+    return Object.keys(src).reduce(
+      (n, k) => n + applyTranslated(target, src[k], tr[k], [...keyPath, k]),
+      0
+    );
+  }
+  if (!translationFits(src, tr)) return 0;
+  setPath(target, keyPath, tr);
+  return 1;
+}
+
+async function syncAddedLanguages() {
+  const enSeed = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "seed-translations", "en.json"), "utf8")
+  );
+  const { rows } = await pool.query(
+    "SELECT code, name, ui_translations, copy_version FROM languages WHERE NOT (code = ANY($1))",
+    [SEED_LANGS]
+  );
+  let changedAny = false;
+  for (const lang of rows) {
+    const ui = lang.ui_translations || {};
+    const needsCopy = lang.copy_version < COPY_VERSION;
+    const paths = [...missingPaths(ui, enSeed), ...(needsCopy ? REWRITTEN_COPY_PATHS : [])]
+      .filter((p) => getPath(enSeed, p) !== undefined)
+      .filter((p, i, all) => all.findIndex((q) => q.join(".") === p.join(".")) === i);
+    if (paths.length === 0) continue;
+
+    const subset = {};
+    for (const p of paths) setPath(subset, p, getPath(enSeed, p));
+    const translated = await translateUiContent(subset, "English", lang.name);
+    if (!translated) {
+      console.error(`Language sync: translation into ${lang.code} failed, will retry on next boot`);
+      continue;
+    }
+
+    let applied = 0;
+    let copyDone = true;
+    for (const p of paths) {
+      const n = applyTranslated(ui, getPath(enSeed, p), getPath(translated, p), p);
+      applied += n;
+      if (n === 0 && REWRITTEN_COPY_PATHS.some((r) => r.join(".") === p.join("."))) {
+        copyDone = false;
+      }
+    }
+    await pool.query(
+      "UPDATE languages SET ui_translations = $1, copy_version = $2 WHERE code = $3",
+      [ui, needsCopy && copyDone ? COPY_VERSION : lang.copy_version, lang.code]
+    );
+    changedAny = changedAny || applied > 0;
+    console.log(`Language sync: ${lang.code} - ${applied} values translated (${paths.length} keys/blocks)`);
+  }
+  if (changedAny) refreshBotSnapshots();
+}
+
 ensureSchema()
   .catch((error) => {
     console.error("Schema migration failed:", error);
@@ -1856,5 +2086,6 @@ ensureSchema()
         console.error("Image variants backfill:", e.message)
       );
       backfillGeocodes(pool).catch((e) => console.error("Geocode backfill:", e.message));
+      syncAddedLanguages().catch((e) => console.error("Language sync:", e.message));
     });
   });
