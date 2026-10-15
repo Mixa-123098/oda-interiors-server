@@ -311,7 +311,15 @@
       "ok": "OK",
       "createUser": "Add User",
       "createUserSubmit": "Create",
-      "createUserError": "Failed to create user"
+      "createUserError": "Failed to create user",
+      "email": "Email",
+      "editEmail": "Change",
+      "saveEmail": "Save",
+      "cancelEmail": "Cancel",
+      "searchNameEmail": "Search by name or email...",
+      "invalidEmail": "Enter a valid email address.",
+      "emailTaken": "This email is already used by another user.",
+      "emailUpdateError": "Couldn't save the email."
     },
     "editProject": {
       "open_close": "editing project",
@@ -452,6 +460,13 @@
       "tooShort": "Password must be at least 8 characters",
       "mismatch": "Passwords do not match",
       "wrongCurrent": "Incorrect current password"
+    },
+    "account": {
+      "title": "My account",
+      "username": "Username",
+      "email": "Email",
+      "role": "Role",
+      "hint": "An administrator can change the email in the users list."
     }
   },
   "footer": {

@@ -311,7 +311,15 @@
       "ok": "OK",
       "createUser": "Pridať používateľa",
       "createUserSubmit": "Vytvoriť",
-      "createUserError": "Nepodarilo sa vytvoriť používateľa"
+      "createUserError": "Nepodarilo sa vytvoriť používateľa",
+      "email": "E-mail",
+      "editEmail": "Zmeniť",
+      "saveEmail": "Uložiť",
+      "cancelEmail": "Zrušiť",
+      "searchNameEmail": "Hľadať podľa mena alebo e-mailu...",
+      "invalidEmail": "Zadajte platnú e-mailovú adresu.",
+      "emailTaken": "Tento e-mail už používa iný používateľ.",
+      "emailUpdateError": "E-mail sa nepodarilo uložiť."
     },
     "editProject": {
       "open_close": "upravenie projektu",
@@ -452,6 +460,13 @@
       "tooShort": "Heslo musí mať aspoň 8 znakov",
       "mismatch": "Heslá sa nezhodujú",
       "wrongCurrent": "Nesprávne aktuálne heslo"
+    },
+    "account": {
+      "title": "Môj účet",
+      "username": "Používateľské meno",
+      "email": "E-mail",
+      "role": "Rola",
+      "hint": "E-mail môže zmeniť administrátor v zozname používateľov."
     }
   },
   "footer": {

@@ -189,10 +189,16 @@ app.use(cookieParser());
 
 // Any successful write from the admin panel (projects, photos, order,
 // visibility, translations, languages) changes what bots should see.
-// Visitor-side writes don't.
+// Visitor-side writes and account management (users, roles, passwords,
+// emails) don't.
 const VISITOR_WRITES = new Set(["/inquiries", "/login", "/logout"]);
+const ACCOUNT_WRITES = /^\/(users|update_user_role|admin_reset_password|me)(\/|$)/;
 app.use((req, res, next) => {
-  if (["GET", "HEAD", "OPTIONS"].includes(req.method) || VISITOR_WRITES.has(req.path)) {
+  if (
+    ["GET", "HEAD", "OPTIONS"].includes(req.method) ||
+    VISITOR_WRITES.has(req.path) ||
+    ACCOUNT_WRITES.test(req.path)
+  ) {
     return next();
   }
   res.on("finish", () => {
@@ -942,6 +948,35 @@ app.post("/users", authenticateToken, requireAdmin, async (req, res) => {
       error: "internal_error",
       details: error.message,
     });
+  }
+});
+
+// An admin corrects a user's email from the users list. Same rule as at
+// creation: one account per address (compared case-insensitively here).
+app.put("/users/:username/email", authenticateToken, requireAdmin, async (req, res) => {
+  const email = (req.body.email || "").trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "invalid_email" });
+  }
+  try {
+    const taken = await pool.query(
+      "SELECT 1 FROM users WHERE lower(email) = lower($1) AND username <> $2",
+      [email, req.params.username]
+    );
+    if (taken.rows.length > 0) {
+      return res.status(409).json({ error: "email_taken" });
+    }
+    const result = await pool.query(
+      "UPDATE users SET email = $1 WHERE username = $2 RETURNING id, username, email, role",
+      [email, req.params.username]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "not_found" });
+    }
+    res.json({ success: true, user: result.rows[0] });
+  } catch (error) {
+    console.error("Error updating email:", error);
+    res.status(500).json({ error: "internal_error" });
   }
 });
 
