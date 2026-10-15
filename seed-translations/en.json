@@ -195,57 +195,7 @@
       "price": "Price: $250/month"
     },
     "button": "Contact Us",
-    "additionalInfo": "*Price for projects with large areas is discussed individually",
-    "includes": {
-      "title": "What's included in the design project",
-      "items": [
-        {
-          "title": "Measurements and brief",
-          "text": "We visit the space, take measurements and talk through how you live and what you need."
-        },
-        {
-          "title": "Space planning",
-          "text": "Layout options with furniture arrangement; we refine the chosen one together."
-        },
-        {
-          "title": "Concept and 3D visualisations",
-          "text": "The look of every room: materials, colours, lighting and furniture."
-        },
-        {
-          "title": "Working drawings",
-          "text": "A full set for the builders: walls, electrics and lighting, plumbing, ceilings, floors, tiling layouts and joinery."
-        },
-        {
-          "title": "Specification",
-          "text": "Materials, finishes, furniture, lighting and plumbing, with quantities and where to buy them."
-        }
-      ]
-    },
-    "supervision": {
-      "title": "Author's supervision",
-      "text": "Site visits, answers to the builders' questions and checks that the work follows the project."
-    },
-    "timeline": {
-      "title": "Timeline",
-      "text": "An apartment of up to 100 m² usually takes 6–10 weeks from measurements to the full set of drawings."
-    },
-    "faq": {
-      "title": "Questions",
-      "items": [
-        {
-          "q": "Is the first consultation free?",
-          "a": "Yes — tell us about your space and we'll get back to you."
-        },
-        {
-          "q": "Do you work outside Ukraine?",
-          "a": "Yes, we work with clients worldwide; meetings and approvals can be held online."
-        },
-        {
-          "q": "What about spaces over 100 m² or public interiors?",
-          "a": "They are priced individually — send us the area and the task."
-        }
-      ]
-    }
+    "additionalInfo": "*Price for projects with large areas is discussed individually"
   },
   "editPage": {
     "adminPanel": "Administration Panel",
@@ -698,8 +648,8 @@
       "description": "Apartments, private houses, restaurants and bars designed by ODA Interiors in Kyiv, Dnipro and beyond — photos, floor plans and project details."
     },
     "price": {
-      "title": "Interior Design Prices per m²",
-      "description": "Interior design project from $35 per m², author's supervision $400 a month. What's included, stages and timeline. First consultation is free."
+      "title": "Prices",
+      "description": "Pricing for interior design and architecture services from ODA, a studio based in Ukraine and working worldwide."
     },
     "contacts": {
       "title": "Contacts & Free Consultation",

@@ -195,57 +195,7 @@
       "price": "Cena: 250$/mesiac"
     },
     "button": "Kontaktujte nás",
-    "additionalInfo": "*Cena za projekty s veľkými plochami je dohodnutá individuálne",
-    "includes": {
-      "title": "Čo zahŕňa dizajnový projekt",
-      "items": [
-        {
-          "title": "Zameranie a zadanie",
-          "text": "Prídeme na miesto, zameriame priestor a prejdeme si, ako žijete a čo potrebujete."
-        },
-        {
-          "title": "Dispozičné riešenie",
-          "text": "Varianty dispozície s rozmiestnením nábytku; vybraný variant spoločne doladíme."
-        },
-        {
-          "title": "Koncepcia a 3D vizualizácie",
-          "text": "Podoba každej miestnosti: materiály, farby, osvetlenie a nábytok."
-        },
-        {
-          "title": "Výkresová dokumentácia",
-          "text": "Kompletná sada pre stavbárov: steny, elektrina a osvetlenie, vodoinštalácia, stropy, podlahy, kladačské plány obkladov a stolárske prvky."
-        },
-        {
-          "title": "Špecifikácia",
-          "text": "Materiály, povrchové úpravy, nábytok, svietidlá a sanita s množstvami a s tým, kde ich kúpiť."
-        }
-      ]
-    },
-    "supervision": {
-      "title": "Autorský dozor",
-      "text": "Návštevy stavby, odpovede na otázky stavbárov a kontrola, či práce zodpovedajú projektu."
-    },
-    "timeline": {
-      "title": "Termíny",
-      "text": "Byt do 100 m² zvyčajne trvá 6–10 týždňov od zamerania po kompletnú výkresovú dokumentáciu."
-    },
-    "faq": {
-      "title": "Otázky",
-      "items": [
-        {
-          "q": "Je prvá konzultácia zadarmo?",
-          "a": "Áno — povedzte nám o svojom priestore a ozveme sa vám."
-        },
-        {
-          "q": "Pracujete aj mimo Ukrajiny?",
-          "a": "Áno, pracujeme s klientmi po celom svete; stretnutia a schvaľovanie môžu prebiehať online."
-        },
-        {
-          "q": "A čo priestory nad 100 m² alebo verejné interiéry?",
-          "a": "Cenu stanovujeme individuálne — pošlite nám rozlohu a zadanie."
-        }
-      ]
-    }
+    "additionalInfo": "*Cena za projekty s veľkými plochami je dohodnutá individuálne"
   },
   "editPage": {
     "adminPanel": "Administrátorský panel",
@@ -698,8 +648,8 @@
       "description": "Byty, rodinné domy, reštaurácie a bary od ODA Interiors v Kyjeve, Dnipre a ďalších mestách — fotografie, pôdorysy a detaily projektov."
     },
     "price": {
-      "title": "Ceny interiérového dizajnu za m²",
-      "description": "Dizajnový projekt interiéru od 35 $ za m², autorský dozor 400 $ mesačne. Čo zahŕňa, etapy a termíny. Prvá konzultácia je zadarmo."
+      "title": "Cenník",
+      "description": "Ceny služieb interiérového dizajnu a architektúry od ODA – štúdia z Ukrajiny, ktoré pracuje po celom svete."
     },
     "contacts": {
       "title": "Kontakty a bezplatná konzultácia",

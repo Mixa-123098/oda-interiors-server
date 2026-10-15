@@ -1976,6 +1976,14 @@ async function ensureSchema() {
           typeof value === "string" &&
           (value.trim() === "." || /minimalism|мінімалізм|minimalizmus/i.test(value)),
       },
+      // The price page's added sections (stages, timeline, FAQ) were taken
+      // back out at the studio's request; its search title/description go
+      // back to the earlier ones, which don't mention them.
+      {
+        path: ["seo", "price"],
+        isOld: (value) =>
+          /What's included|Що входить|Čo zahŕňa/.test(value?.description || ""),
+      },
     ];
 
     for (const m of COPY_MIGRATIONS) {
@@ -2078,6 +2086,15 @@ async function ensureSchema() {
       }
     }
 
+    // Keys of the price-page sections that were removed again: dropped from
+    // every language so they don't linger in the admin translations editor.
+    for (const key of ["includes", "supervision", "timeline", "faq"]) {
+      await client.query(
+        "UPDATE languages SET ui_translations = ui_translations #- $1 WHERE ui_translations #> $1 IS NOT NULL",
+        [["pricesPage", key]]
+      );
+    }
+
     // Source-language (Ukrainian) briefs that were only a "." placeholder
     // get the text from the seed. (Translations: fillPlaceholderBriefs.)
     const uaSeed = JSON.parse(
@@ -2150,6 +2167,11 @@ const REWRITTEN_COPY = [
       ["projects", "project207", "brief"],
       ["projects", "project208", "brief"],
     ],
+  },
+  {
+    // Price page title/description back to the earlier wording.
+    version: 3,
+    paths: [["seo", "price"]],
   },
 ];
 const COPY_VERSION = Math.max(...REWRITTEN_COPY.map((r) => r.version));
