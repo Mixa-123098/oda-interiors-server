@@ -466,7 +466,15 @@
       "username": "Používateľské meno",
       "email": "E-mail",
       "role": "Rola",
-      "hint": "E-mail môže zmeniť administrátor v zozname používateľov."
+      "edit": "Upraviť",
+      "save": "Uložiť",
+      "cancel": "Zrušiť",
+      "currentPassword": "Aktuálne heslo (na potvrdenie zmien)",
+      "saved": "Zmeny boli uložené.",
+      "error": "Zmeny sa nepodarilo uložiť.",
+      "invalidUsername": "Používateľské meno: 2–32 znakov - písmená, číslice, bodka, pomlčka alebo podčiarkovník.",
+      "usernameTaken": "Toto používateľské meno je už obsadené.",
+      "passwordHint": "Heslo sa mení na karte „Zmeniť heslo“."
     }
   },
   "footer": {

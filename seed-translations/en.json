@@ -466,7 +466,15 @@
       "username": "Username",
       "email": "Email",
       "role": "Role",
-      "hint": "An administrator can change the email in the users list."
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "currentPassword": "Current password (to confirm the changes)",
+      "saved": "Changes saved.",
+      "error": "Couldn't save the changes.",
+      "invalidUsername": "Username: 2–32 characters - letters, digits, dot, dash or underscore.",
+      "usernameTaken": "This username is already taken.",
+      "passwordHint": "The password is changed on the \"Change password\" tab."
     }
   },
   "footer": {

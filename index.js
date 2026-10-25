@@ -1204,6 +1204,75 @@ app.put("/me/password", authenticateToken, async (req, res) => {
   }
 });
 
+// Any logged-in user edits their own username/email ("My account"). Like the
+// password change it needs the current password, so an unattended session
+// can't redirect the account to someone else's address. The role is not
+// editable here - only an admin changes roles.
+app.put("/me", authenticateToken, async (req, res) => {
+  const username = (req.body.username || "").trim();
+  const email = (req.body.email || "").trim();
+  const { currentPassword } = req.body;
+  if (!currentPassword) {
+    return res.status(400).json({ error: "missing_fields" });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "invalid_email" });
+  }
+
+  const client = await pool.connect();
+  try {
+    const { rows } = await client.query(
+      "SELECT username, password FROM users WHERE id = $1",
+      [req.user.id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "user_not_found" });
+    }
+    if (!(await bcrypt.compare(currentPassword, rows[0].password))) {
+      return res.status(401).json({ error: "invalid_current_password" });
+    }
+
+    // Checked only when it actually changes, so an older login that doesn't
+    // fit the rule can still save a new email.
+    const usernameChanged = username !== rows[0].username;
+    if (usernameChanged && !/^[\p{L}\p{N}._-]{2,32}$/u.test(username)) {
+      return res.status(400).json({ error: "invalid_username" });
+    }
+    const taken = await client.query(
+      "SELECT lower(username) = lower($1) AS same_name, lower(email) = lower($2) AS same_email FROM users WHERE id <> $3 AND (lower(username) = lower($1) OR lower(email) = lower($2))",
+      [username, email, req.user.id]
+    );
+    if (usernameChanged && taken.rows.some((r) => r.same_name)) {
+      return res.status(409).json({ error: "username_taken" });
+    }
+    if (taken.rows.some((r) => r.same_email)) {
+      return res.status(409).json({ error: "email_taken" });
+    }
+
+    const result = await client.query(
+      "UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING id, username, email, role, must_change_password",
+      [username, email, req.user.id]
+    );
+    const user = result.rows[0];
+    // The token carries the username (the users list uses it to mark "it's
+    // you"), so a renamed user gets a fresh one instead of a stale name.
+    if (usernameChanged) {
+      const token = jwt.sign(
+        { id: user.id, username: user.username, role: user.role },
+        JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+      res.cookie("token", token, COOKIE_OPTIONS);
+    }
+    res.json({ ...user, must_change_password: !!user.must_change_password });
+  } catch (error) {
+    console.error("Error updating account:", error);
+    res.status(500).json({ error: "internal_error" });
+  } finally {
+    client.release();
+  }
+});
+
 let projectdir;
 app.post("/create_post", authenticateToken, requireStaff, async (req, res) => {
   try {
